@@ -1,0 +1,24 @@
+{
+    "inventory": 9,
+    "limit": "logical_broker_a",
+    "extra_vars": {
+        "queueName": "QUEUE_TO_CREATE",
+        "queueSettings": {
+            "accessType": "non-exclusive",
+            "eventMsgSpoolUsageThreshold": {
+                "clearPercent": 30,
+                "setPercent": 50
+            },
+            "ingressEnabled": true,
+            "maxMsgSpoolUsage": 450,
+            "maxTtl": 0,
+            "owner": "default",
+            "permission": "consume",
+            "redeliveryEnabled": true,
+            "rejectLowPriorityMsgEnabled": false,
+            "rejectLowPriorityMsgLimit": 0,
+            "respectMsgPriorityEnabled": false,
+            "respectTtlEnabled": false
+        }
+    }
+}

@@ -1,0 +1,71 @@
+- name: Delete Solace Queue Subscriptions
+  hosts: all
+  gather_facts: false
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_queue:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace.pubsub_plus.solace_queue_subscriptions:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+
+  tasks:
+
+    - name: Get secrets from file on disk
+      ansible.builtin.include_vars:
+        file: "{{ secrets_file }}"
+      when: secrets_file is defined
+
+    - name: set subscriptionMode to explicit when not defined
+      set_fact:
+        subscriptionMode: explicit
+      when: subscriptionMode is not defined
+
+    - name: fail if subscriptionMode is invalid
+      fail:
+        msg:
+          - "The subscriptionMode must be either 'explicit' or 'all'"
+      when: subscriptionMode not in [ 'explicit', 'all' ]
+
+    - name: delete subscriptions from queue explicitly
+      solace_queue_subscriptions:
+        queue_name: "{{ queueName }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        subscription_topics: "{{ topicSubscriptions }}"
+        state: absent
+      when:
+        - topicSubscriptions is defined
+        - subscriptionMode=='explicit'
+
+    - name: delete all subscriptions from queue
+      solace_queue_subscriptions:
+        queue_name: "{{ queueName }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        subscription_topics: null
+        state: exactly
+      when:
+        - subscriptionMode=='all'
+
+    # create user message
+    - set_fact:
+        broker_url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}"
+
+    - name: message
+      debug:
+        msg:
+          - "playbook '{{ ansible_play_name }}' complete"
+          - "broker: {{ broker_url }}"
+          - "vpn:    {{ vpn }}"
+          - "queue:  {{ queueName }}"
+          - "subscriptions: {{ topicSubscriptions|default([]) }}"

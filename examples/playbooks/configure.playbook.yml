@@ -1,0 +1,123 @@
+- name: Quickstart Configure Playbook
+  hosts: all
+  gather_facts: no
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace.pubsub_plus.solace_queue:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+    solace.pubsub_plus.solace_queue_subscription:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      username: "{{ sempv2_username }}"
+      password: "{{ sempv2_password }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ vpn }}"
+
+  tasks:
+    - name: create queue ANS_TEST_QUEUE1
+      solace_queue:
+        name: ANS_TEST_QUEUE1
+        settings:
+          accessType: non-exclusive
+          maxMsgSpoolUsage: 100
+          respectTtlEnabled: true
+          maxTtl: 3600
+          respectMsgPriorityEnabled: false
+          owner: default
+          permission: consume
+        state: present
+
+    - name: add subscription ANS_TEST_QUEUE1
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE1
+        name: "ansible/queue/1"
+        state: present
+
+    - name: add subscription to ANS_TEST_QUEUE1 bucket
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE1
+        name: "ansible/bucket/>"
+        state: present
+        
+    - name: add subscription to ANS_TEST_QUEUE1 testgit
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE1
+        name: "ansible/testgit>"
+        state: present
+
+    - name: add subscription to ANS_TEST_QUEUE1 testgit2
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE1
+        name: "ansible/testgit2>"
+        state: present
+
+    - name: create queue ANS_TEST_QUEUE2
+      solace_queue:
+        name: ANS_TEST_QUEUE2
+        settings:
+          accessType: exclusive
+          maxMsgSpoolUsage: 55
+          respectTtlEnabled: false
+          maxTtl: 0
+          respectMsgPriorityEnabled: true
+          owner: default
+          permission: consume
+        state: present
+
+    - name: add subscription ANS_TEST_QUEUE2
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE2
+        name: "ansible/queue/2"
+        state: present
+
+    - name: add subscription ANS_TEST_QUEUE2 bucket
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE2
+        name: "ansible/bucket/>"
+        state: present
+
+    - name: create queue ANS_TEST_QUEUE3
+      solace_queue:
+        name: ANS_TEST_QUEUE3
+        settings:
+          accessType: non-exclusive
+          maxMsgSpoolUsage: 44
+          respectTtlEnabled: false
+          maxTtl: 0
+          respectMsgPriorityEnabled: false
+          owner: default
+          permission: consume
+        state: present
+
+    - name: add subscription ANS_TEST_QUEUE3
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE3
+        name: "ansible/queue/3"
+        state: present
+
+    - name: add subscription ANS_TEST_QUEUE3 bucket
+      solace_queue_subscription:
+        queue: ANS_TEST_QUEUE3
+        name: "ansible/bucket/>"
+        state: present
+
+    # create user message
+    - set_fact:
+        broker_url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}"
+    - name: message
+      debug:
+        msg:
+          - "open private browser window: {{ broker_url }}"
+          - "login: {{ sempv2_username }} / {{ sempv2_password }}"
+          - "vpn: default"
+          - "Queues: quickstart_queue"
+          - "Subscriptions: quickstart/topic"

@@ -1,0 +1,16 @@
+---
+queueDefinitions:
+  - queueName: theQueueName
+    queueSettings:
+      accessType: exclusive
+    topicSubscriptions:
+      - topic/subscription/1
+      - topic/subscription/two
+      - topic/subscription/*/3
+  - queueName: theOtherQueueName
+    queueSettings:
+      accessType: non-exclusive
+    topicSubscriptions:
+      - other/subscription/1
+      - other/subscription/two
+      - other/subscription/*/3

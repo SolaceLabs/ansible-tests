@@ -1,0 +1,120 @@
+---
+servers:
+  deployment_spec:
+    url: westcoast
+    description: logical server - westcoast
+    protocol: solace
+    protocolVersion: 1.0.0
+    x-ep-modelled-event-mesh: demo-mesh
+    x-ep-logical-broker: logical_broker_b
+  development:
+    url: westcoast
+    description: logical server - westcoast
+    protocol: solace
+    protocolVersion: 1.0.0
+    x-ep-modelled-event-mesh: demo-mesh
+    x-ep-logical-broker: logical_broker_a
+  integration-test:
+    url: eastcoast
+    description: logical server - eastcoast
+    protocol: solace
+    protocolVersion: 1.0.0
+    x-ep-modelled-event-mesh: demo-mesh
+    x-ep-logical-broker: logical_broker_b
+components:
+  schemas:
+    PersonSchema_0_1_0:
+      x-schema-version: 0.1.0
+      x-schema-version-displayname: PersonSchema0.1.0
+      "$schema": http://json-schema.org/draft-07/schema#
+      x-schema-name: PersonSchema
+      x-schema-version-id: jjfg2jkpco3
+      x-schema-state-name: DRAFT
+      x-schema-state-id: '1'
+      title: Person
+      type: object
+      properties:
+        firstName:
+          description: The person's first name.
+          type: string
+        lastName:
+          description: The person's last name.
+          type: string
+        age:
+          description: Age in years which must be equal to or greater than zero.
+          type: integer
+          minimum: 0
+      "$id": https://example.com/person.schema.json
+      x-schema-id: ac9c2o2tvz1
+  messages:
+    RegistrationEvent_0_1_0:
+      x-event-version-displayname: RegistrationEvent0.1.0
+      x-event-name: RegistrationEvent
+      x-event-id: elrp09gm4ae
+      payload:
+        "$ref": "#/components/schemas/PersonSchema_0_1_0"
+      x-event-state-name: DRAFT
+      description: RegistrationEvent
+      schemaFormat: application/vnd.aai.asyncapi+json;version=2.0.0
+      contentType: application/json
+      x-event-version-id: vflx6cvh6da
+      x-event-state-id: '1'
+      x-event-version: 0.1.0
+channels:
+  solace/cloud/{identification_0_1_0}:
+    publish:
+      message:
+        "$ref": "#/components/messages/RegistrationEvent_0_1_0"
+      bindings:
+        solace:
+          bindingVersion: 0.2.0
+          destinations:
+          - destinationType: queue
+            deliveryMode: direct
+            queue:
+              name: CreatedHREvents
+              topicSubscriptions:
+              - person/*/created
+              - person/other/topic
+              accessType: exclusive
+          - destinationType: queue
+            deliveryMode: persistent
+            queue:
+              name: UpdatedHREvents
+              topicSubscriptions:
+              - person/*/updated
+              - person/other/topic
+              - person/third/topic
+              accessType: non-exclusive
+          - destinationType: queue
+            deliveryMode: persistent
+            queue:
+              name: WHOLE_OTHER_QUEUE
+              topicSubscriptions:
+              - star/*/updated
+              - star/other/topic
+              - star/third/topic
+              accessType: non-exclusive
+    parameters:
+      identification_0_1_0:
+        schema:
+          type: string
+          enum:
+          - one
+          - two
+        x-enum-id: 7y0xelw8rk6
+        x-enum-version-id: '09hnh0538sl'
+        x-enum-version: 0.1.0
+        x-enum-name: identification
+        x-enum-version-displayname: identification0.1.0
+        x-enum-state-id: '1'
+        x-parameter-name: identification
+asyncapi: 2.0.0
+info:
+  x-event-api-state-name: DRAFT
+  description: myEventApi
+  x-application-domain-id: htkekrh37s0
+  title: myEventApi
+  x-application-domain-name: myAppDomain
+  version: 0.1.0
+  x-event-api-state-id: '1'

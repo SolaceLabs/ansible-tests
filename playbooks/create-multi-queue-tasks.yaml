@@ -1,0 +1,56 @@
+---
+  - name: assign queueSettings from input
+    set_fact:
+      queueSettings: "{{ queueDefinition.queueSettings }}"
+
+  - name: default queueSettings when not defined
+    set_fact:
+      queueSettings: {}
+    when: queueSettings is not defined
+    
+  - name: default subscriptionMode to create when not defined
+    set_fact:
+      subscriptionMode: create
+    when: subscriptionMode is not defined
+
+  - name: fail if subscriptionMode is invalid
+    fail:
+      msg:
+        - "The subscriptionMode must be either 'create' or 'replace'"
+    when: subscriptionMode not in [ 'create', 'replace' ]
+
+  - name: display queue settings
+    debug: var=queueSettings
+
+  - name: display inventory hostname
+    debug: var=inventory_hostname
+
+  - name: create solace queue
+    solace_queue:
+      name: "{{ queueDefinition.queueName }}"
+      username: "{{ broker_secrets[ inventory_hostname ].username }}"
+      password: "{{ broker_secrets[ inventory_hostname ].password }}"
+      settings: "{{ queueSettings }}"
+      state: present
+
+  - name: manage subscriptions
+    solace_queue_subscriptions:
+      queue_name: "{{ queueDefinition.queueName }}"
+      username: "{{ broker_secrets[ inventory_hostname ].username }}"
+      password: "{{ broker_secrets[ inventory_hostname ].password }}"
+      subscription_topics: "{{ queueDefinition.topicSubscriptions }}"
+      state: "{{ 'present' if subscriptionMode=='create' else 'exactly' }}"
+    when: queueDefinition.topicSubscriptions is defined
+
+  # create user message
+  - set_fact:
+      broker_url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}"
+
+  - name: message
+    debug:
+      msg:
+        - "playbook '{{ ansible_play_name }}' complete"
+        - "broker: {{ broker_url }}"
+        - "vpn:    {{ vpn }}"
+        - "queue:  {{ queueDefinition.queueName }}"
+        - "subscriptions: {{ queueDefinition.topicSubscriptions|default([]) }}"

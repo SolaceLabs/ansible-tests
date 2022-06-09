@@ -1,0 +1,4 @@
+---
+inventory: env_dev
+limit: logical_broker_b
+queueName: QUEUE_TO_CREATE

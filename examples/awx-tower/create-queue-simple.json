@@ -1,0 +1,7 @@
+{
+    "inventory": 9,
+    "limit": "logical_broker_b",
+    "extra_vars": {
+        "queueName": "QUEUE_TO_CREATE"
+    }
+}
