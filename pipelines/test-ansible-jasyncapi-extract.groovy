@@ -17,7 +17,8 @@ pipeline {
   agent { label 'ansible' }
   parameters {
     string(name: 'ANS_INVENTORY',      defaultValue: 'not_specified', description: 'Ansible Inventory File in Source Project')
-    string(name: 'CICDCONFIG_YAML64',  defaultValue: '',              description: 'Base64 encoded YAML CICD config parameter')
+    string(name: 'CICDCONFIG_YAML64',  defaultValue: 'LS0tCnRpdGxlOiBteUV2ZW50QXBpCmRlc2NyaXB0aW9uOiBteUV2ZW50QXBpCmFwaVZlcnNpb246IDAuMS4wCmFwcGxpY2F0aW9uRG9tYWluSWQ6IGh0a2VrcmgzN3MwCmFwcGxpY2F0aW9uRG9tYWluTmFtZTogbXlBcHBEb21haW4KZXZlbnRBcGlTdGF0ZTogMQpldmVudEFwaVN0YXRlTmFtZTogRFJBRlQKbW9kZWxlZEV2ZW50TWVzaDogZGVtby1tZXNoCmxvZ2ljYWxCcm9rZXI6IGxvZ2ljYWxfYnJva2VyX2IKcXVldWVEZWZpbml0aW9uczoKLSBxdWV1ZU5hbWU6IENyZWF0ZWRIUkV2ZW50cwogIHF1ZXVlU2V0dGluZ3M6CiAgICBhY2Nlc3NUeXBlOiBleGNsdXNpdmUKICB0b3BpY1N1YnNjcmlwdGlvbnM6CiAgLSBwZXJzb24vKi9jcmVhdGVkCiAgLSBwZXJzb24vb3RoZXIvdG9waWMKLSBxdWV1ZU5hbWU6IFVwZGF0ZWRIUkV2ZW50cwogIHF1ZXVlU2V0dGluZ3M6CiAgICBhY2Nlc3NUeXBlOiBub24tZXhjbHVzaXZlCiAgdG9waWNTdWJzY3JpcHRpb25zOgogIC0gcGVyc29uLyovdXBkYXRlZAogIC0gcGVyc29uL290aGVyL3RvcGljCiAgLSBwZXJzb24vdGhpcmQvdG9waWMKLSBxdWV1ZU5hbWU6IFdIT0xFX09USEVSX1FVRVVFCiAgcXVldWVTZXR0aW5nczoKICAgIGFjY2Vzc1R5cGU6IG5vbi1leGNsdXNpdmUKICB0b3BpY1N1YnNjcmlwdGlvbnM6CiAgLSBzdGFyLyovdXBkYXRlZAogIC0gc3Rhci9vdGhlci90b3BpYwogIC0gc3Rhci90aGlyZC90b3BpYw==',
+                  description: 'Base64 encoded YAML CICD config parameter')
   }
   environment {
     ANS_INVENTORY="${params.ANS_INVENTORY}"
@@ -35,7 +36,7 @@ pipeline {
       }
     }
     stage( 'extract_cicdconfig' ) {
-      
+
     }
     stage('create_queues') {
       steps {
