@@ -36,7 +36,9 @@ pipeline {
       }
     }
     stage( 'extract_cicdconfig' ) {
-
+      steps{ 
+        sh "echo extract_cicdconfig"
+      }
     }
     stage('create_queues') {
       steps {
