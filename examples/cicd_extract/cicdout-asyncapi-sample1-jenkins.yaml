@@ -4,6 +4,7 @@ description: myEventApi
 apiVersion: 0.1.0
 applicationDomainId: htkekrh37s0
 applicationDomainName: myAppDomain
+applicationVersionId: qwertyh37s4
 eventApiState: 1
 eventApiStateName: DRAFT
 modeledEventMesh: demo-mesh

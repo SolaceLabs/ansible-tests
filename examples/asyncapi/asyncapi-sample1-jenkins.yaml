@@ -7,20 +7,10 @@ servers:
     protocolVersion: 1.0.0
     x-ep-modelled-event-mesh: demo-mesh
     x-ep-logical-broker: logical_broker_b
-  development:
-    url: westcoast
-    description: logical server - westcoast
-    protocol: solace
-    protocolVersion: 1.0.0
-    x-ep-modelled-event-mesh: demo-mesh
-    x-ep-logical-broker: logical_broker_a
-  integration-test:
-    url: eastcoast
-    description: logical server - eastcoast
-    protocol: solace
-    protocolVersion: 1.0.0
-    x-ep-modelled-event-mesh: demo-mesh
-    x-ep-logical-broker: logical_broker_b
+    bindings:
+      solace:
+        bindingVersion: 0.2.0
+        msgVpn: awesomeSolaceMessageVpn
 components:
   schemas:
     PersonSchema_0_1_0:
@@ -118,3 +108,4 @@ info:
   x-application-domain-name: myAppDomain
   version: 0.1.0
   x-event-api-state-id: '1'
+  x-application-version-id: qwertyh37s4

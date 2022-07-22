@@ -9,6 +9,24 @@
             "protocolVersion": "1.0.0",
             "x-ep-modelled-event-mesh": "demo-mesh",
             "x-ep-logical-broker": "logical_broker_b"
+        },
+        "development":
+        {
+            "url": "westcoast",
+            "description": "logical server - westcoast",
+            "protocol": "solace",
+            "protocolVersion": "1.0.0",
+            "x-ep-modelled-event-mesh": "demo-mesh",
+            "x-ep-logical-broker": "logical_broker_a"
+        },
+        "integration-test":
+        {
+            "url": "eastcoast",
+            "description": "logical server - eastcoast",
+            "protocol": "solace",
+            "protocolVersion": "1.0.0",
+            "x-ep-modelled-event-mesh": "demo-mesh",
+            "x-ep-logical-broker": "logical_broker_b"
         }
     },
     "components":
@@ -159,6 +177,7 @@
         "title": "myEventApi",
         "x-application-domain-name": "myAppDomain",
         "version": "0.1.0",
-        "x-event-api-state-id": "1"
+        "x-event-api-state-id": "1",
+        "x-application-version-id": "qwertyh37s4"
     }
 }
