@@ -2,7 +2,7 @@ def cicd
 def invName
 //def invId
 def logicalBroker
-def queueDefinitions
+def cicdExtraVars
 pipeline {
   agent { label 'ansible' }
   parameters {
@@ -37,8 +37,8 @@ pipeline {
           cicd = readYaml file: "${CICDCONFIG_FILE}"
           invName = cicd.env
           logicalBroker = cicd.logicalBroker
-          queueDefinitions = writeJSON returnText: true, json: cicd.queueDefinitions
-          println("${queueDefinitions}")
+          cicdExtraVars = writeJSON returnText: true, json: cicd
+          println("${cicdExtraVars}")
         }
 /*
         script {
@@ -60,7 +60,7 @@ pipeline {
     stage ('ansible build') {
       steps {
         withCredentials([file(credentialsId: 'ansible_vault_password', variable: 'vault_passwd_file')]) {
-          sh "ansible-playbook -i inventory/${invName} --limit ${logicalBroker} --vault-password-file ${vault_passwd_file} --extra-vars='${queueDefinitions}' --extra-vars=@${ENV_SECRETS_FILE} playbooks/create-multi-queue-control.yaml"
+          sh "ansible-playbook -i inventory/${invName} --limit ${logicalBroker} --vault-password-file ${vault_passwd_file} --extra-vars='${cicdExtraVars}' --extra-vars=@${ENV_SECRETS_FILE} playbooks/create-multi-queue-control.yaml"
 /*
           ansiblePlaybook extraVars: [ queueDefinitions: "${queueDefinitions}", "@${ENV_SECRETS_FILE}" ], 
                           installation: 'ANSIBLE_SOLACE_COLLECTION', 
