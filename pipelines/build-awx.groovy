@@ -17,6 +17,15 @@ pipeline {
 //    CICDCONFIG_YAML64="${params.CICDCONFIG_YAML64}"
   }
   stages {
+    stage( 'Checkout' ) {
+        steps {
+            script {
+                git branch: 'main', url: 'https://github.com/dennis-brinley/asyncapi-samples.git'
+                sh "pwd"
+                sh "ls -l"
+            }
+        }
+    }
     stage( 'Read CICD Input' ) {
       steps {
         script {
