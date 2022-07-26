@@ -68,7 +68,7 @@ pipeline {
                           limit: "${logicalBroker}", 
                           playbook: 'playbooks/create-multi-queue-control.yaml', 
                           vaultCredentialsId: 'ansible_vault_password'  
-}
+*/
         }
       }
     }
