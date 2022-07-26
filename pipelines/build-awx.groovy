@@ -33,7 +33,7 @@ pipeline {
     stage( 'Read CICD Input' ) {
       steps {
         script {
-          cicd = readYaml file: "${params.CICDCONFIG_FILE}"
+          cicd = readYaml file: "${CICDCONFIG_FILE}"
           invName = cicd.env
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
