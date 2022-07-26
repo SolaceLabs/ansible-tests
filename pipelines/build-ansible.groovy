@@ -38,6 +38,7 @@ pipeline {
           invName = cicd.env
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
+          println("${cicdExtraVars}")
         }
 /*
         script {
