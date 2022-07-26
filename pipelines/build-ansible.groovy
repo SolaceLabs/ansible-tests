@@ -1,6 +1,6 @@
 def cicd
 def invName
-def invId
+//def invId
 def logicalBroker
 def cicdExtraVars
 pipeline {
@@ -19,6 +19,7 @@ pipeline {
   environment {
     BUILD_DIR = "__BUILD_DIR__/"
     CICDCONFIG_FILE = "${BUILD_DIR}${params.CICDCONFIG_FILE}"
+    ENV_SECRETS_FILE = "config/${BRANCH}_secrets.encrypted"
   }
   stages {
     stage( 'Checkout' ) {
@@ -38,6 +39,7 @@ pipeline {
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
         }
+/*
         script {
             def responseJson = httpRequest httpMode: 'GET',
                                 url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
@@ -51,8 +53,23 @@ pipeline {
 
             println( "Found Inventory Name=${invName}, ID=${invId}" )
         }
+*/
       }
     }
+    stage ('ansible build') {
+      steps {
+        withCredentials([file(credentialsId: 'ansible_vault_password', variable: 'vault_passwd_file')]) {
+//          sh "ansible-playbook -i inventory/${invName} --limit ${logicalBroker} --vault-password-file ${vault_passwd_file} --extra-vars='${cicdExtraVars}' --extra-vars=@config/development_secrets.encrypted playbooks/create-multi-queue-control.yaml"
+          ansiblePlaybook extras: '${cicdExtraVars}, @${ENV_SECRETS_FILE}', 
+                          installation: 'ANSIBLE_SOLACE_COLLECTION', 
+                          inventory: 'inventory/${ANS_INVENTORY}', 
+                          limit: '${cicd.logicalBroker}', 
+                          playbook: 'playbooks/create-multi-queue-control.yaml', 
+                          vaultCredentialsId: 'ansible_vault_password'  
+        }
+      }
+    }
+/*
     stage ('tower') {
         steps {
             script {
@@ -72,6 +89,7 @@ pipeline {
             }
         }
     }
+*/
 //    stage( 'Update EP MEM' ) {
 //        steps {
 //
