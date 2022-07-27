@@ -47,7 +47,7 @@ pipeline {
 //          sh "ansible-playbook -i inventory/${invName} --limit ${logicalBroker} --vault-password-file ${vault_passwd_file} --extra-vars='${cicdExtraVars}' --extra-vars=@${ENV_SECRETS_FILE} playbooks/create-multi-queue-control.yaml"
 
 //          ansiblePlaybook extraVars: [ queueDefinitions: "${queueDefinitions}", "@${ENV_SECRETS_FILE}" ], 
-          ansiblePlaybook extras: "-e '${queueDefinitions}' -e @${ENV_SECRETS_FILE}", 
+          ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${ENV_SECRETS_FILE}", 
                           installation: 'ANSIBLE_SOLACE_COLLECTION', 
                           inventory: "inventory/${invName}", 
                           limit: "${logicalBroker}", 
