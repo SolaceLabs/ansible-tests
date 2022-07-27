@@ -5,6 +5,9 @@ def logicalBroker
 def cicdExtraVars
 pipeline {
   agent { label 'ansible' }
+  triggers {
+    githubPush()
+  }
 /*
   parameters {
     string( name:           'PROJECT_REPO',
