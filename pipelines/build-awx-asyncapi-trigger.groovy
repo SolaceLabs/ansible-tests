@@ -4,7 +4,6 @@ def invId
 def logicalBroker
 def cicdExtraVars
 def branch
-def foundMesh
 pipeline {
   agent { label 'ansible' }
   parameters {
@@ -121,17 +120,17 @@ pipeline {
             def response = readJSON text: responseJson.getContent()
             def eventMeshes = response.data.eventMeshIds
 
-            println("Response JSON = ${responseJson}")
+            println("Response JSON = ${responseJson.getContent()}")
             println("Event Mesh Id = ${response?.data?.eventMeshIds[0]}")
 
-            foundMesh = false
+            def foundMesh = false
                 response.data.eventMeshIds.each { val -> 
                   if( val == cicd.modelledEventMeshId ) {
                     foundMesh = true
                   }
             }
 
-            if ( foundMesh == true ) {
+            if ( foundMesh == false ) {
               def patchRequest
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( cicd.modelledEventMeshId )
