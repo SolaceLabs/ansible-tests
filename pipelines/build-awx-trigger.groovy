@@ -29,6 +29,12 @@ pipeline {
     stage( 'Checkout' ) {
         steps {
             script {
+                sh "echo ${WEBHOOK_REF}"
+                sh "echo ${WEBHOOK_SSH_URL}"
+                sh "echo ${WEBHOOK_ADDED}"
+                sh "echo ${WEBHOOK_MODIFIED}"
+                sh "echo && env"
+
                 dir( "${BUILD_DIR}" ) {
                     git branch: "${BRANCH}", url: "${PROJECT_REPO}"
                 }
