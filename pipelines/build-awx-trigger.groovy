@@ -38,7 +38,7 @@ pipeline {
             }
             script {
                 dir( "${BUILD_DIR}" ) {
-                    git branch: "${branch}", url: "${PROJECT_REPO}"
+                    git branch: "${branch}", url: "${WEBHOOK_REPO_HTTP_URL}"
                 }
             }
         }
