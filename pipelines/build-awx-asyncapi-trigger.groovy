@@ -123,7 +123,7 @@ pipeline {
 
             foundMesh = false
                 response.data.eventMeshIds.each { val -> 
-                  if( val == modelledEventMeshId ) {
+                  if( val == cicd.modelledEventMeshId ) {
                     foundMesh = true
                   }
             }
