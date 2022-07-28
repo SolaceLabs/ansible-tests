@@ -104,6 +104,7 @@ pipeline {
     }
     stage( 'update EP' ) {
         steps {
+          script {
             def responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
                                 authentication: 'solace-cloud-authorization-header',
@@ -131,6 +132,7 @@ pipeline {
                                   validResponseCodes: "200,201"
                                   requestBody: "${patchRequestJson}"
             }
+          }
 /*
 def lst = ['foo', 'bar', 'baz']
 // using implicit argument
