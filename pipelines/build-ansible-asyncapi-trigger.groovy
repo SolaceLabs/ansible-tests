@@ -49,7 +49,7 @@ pipeline {
       steps {
         script {
           sh "mkdir -p ${TMP_DIR} && rm -f ${CICDCONFIG_FILE}"
-          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi_in=${BUILD_DIR}${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${branch}"
+          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${branch}"
         }
       }
     }
