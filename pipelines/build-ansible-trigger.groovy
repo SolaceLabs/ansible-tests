@@ -1,6 +1,5 @@
 def cicd
 def invName
-def invId
 def logicalBroker
 def cicdExtraVars
 def branch
@@ -56,41 +55,18 @@ pipeline {
         }
       }
     }
-    stage( 'lookup tower invId' ) {
+    stage ('ansible build') {
       steps {
-        script {
-            def responseJson = httpRequest httpMode: 'GET',
-                                url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
-                                authentication: 'awx-credentials',
-                                validResponseCodes: "200,201"
+        withCredentials([file(credentialsId: 'ansible_vault_password', variable: 'vault_passwd_file')]) {
+          ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${ENV_SECRETS_FILE}", 
+                          installation: 'ANSIBLE_SOLACE_COLLECTION', 
+                          inventory: "inventory/${invName}", 
+                          limit: "${logicalBroker}", 
+                          playbook: 'playbooks/create-multi-queue-control.yaml', 
+                          vaultCredentialsId: 'ansible_vault_password'  
 
-            // ADD ERROR HANDLING
-            def response = readJSON text: responseJson.getContent()
-
-            invId = response.results[0].id
-
-            println( "Found Inventory Name=${invName}, ID=${invId}" )
         }
       }
-    }
-    stage ('tower') {
-        steps {
-            script {
-                def results = ansibleTower(
-                    towerServer: 'Solace AWX',
-                    jobTemplate: 'multi-queue',
-                    inventory: invId.toString(),
-                    limit: logicalBroker,
-                    extraVars: cicdExtraVars,
-                    importTowerLogs: true,
-                    removeColor: false,
-                    verbose: true,
-                    async: false
-                )
-                println(results.JOB_ID)
-                println(results.value)
-            }
-        }
     }
 //    stage( 'Update EP MEM' ) {
 //        steps {
