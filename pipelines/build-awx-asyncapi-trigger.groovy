@@ -121,6 +121,9 @@ pipeline {
             def response = readJSON text: responseJson.getContent()
             def eventMeshes = response.data.eventMeshIds
 
+            println("Response JSON = ${responseJson}")
+            println("Event Mesh Id = ${response?.data?.eventMeshIds[0]}")
+
             foundMesh = false
                 response.data.eventMeshIds.each { val -> 
                   if( val == cicd.modelledEventMeshId ) {
