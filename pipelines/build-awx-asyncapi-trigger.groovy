@@ -124,7 +124,7 @@ pipeline {
               def patchRequest
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( modelledEventMeshId )
-              patchRequestJson = writeJSON returnText: true, json: request
+              patchRequestJson = writeJSON returnText: true, json: patchRequest
               def patchResponse = httpRequest httpMode: 'PATCH',
                                   url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
                                   authentication: 'solace-cloud-authorization-header',
