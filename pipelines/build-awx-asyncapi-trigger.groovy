@@ -115,13 +115,9 @@ pipeline {
                                 customHeaders: custHeaders,
                                 validResponseCodes: "200,201"
             }
-            println("call to get event mesh list - END")
             // ADD ERROR HANDLING
             def response = readJSON text: responseJson.getContent()
             def eventMeshes = response.data.eventMeshIds
-
-            println("Response JSON = ${responseJson.getContent()}")
-            println("Event Mesh Id = ${response?.data?.eventMeshIds[0]}")
 
             def foundMesh = false
                 response.data.eventMeshIds.each { val -> 
@@ -134,9 +130,6 @@ pipeline {
               def eventMeshIds = response.data.eventMeshIds
               eventMeshIds.add( cicd.modelledEventMeshId )
               def patchRequest = [ data : [ eventMeshIds: eventMeshIds ] ]
-//              patchRequest.data = data
-//              patchRequest.data.eventMeshIds = response.data.eventMeshIds
-//              patchRequest.data.eventMeshIds.add( cicd.modelledEventMeshId )
               patchRequestJson = writeJSON returnText: true, json: patchRequest
               println( "${patchRequestJson}" )
               withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
