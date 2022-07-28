@@ -106,36 +106,39 @@ pipeline {
     stage( 'update EP' ) {
         steps {
           script {
-            foundMesh = false
+            def responseJson
             println("call to get event mesh list - START")
-            def responseJson = httpRequest httpMode: 'GET',
+            withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
+                responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
-                                authentication: 'solace-cloud-authorization-header',
+                                authentication: "${cloudAuth}",
                                 validResponseCodes: "200,201"
+            }
             println("call to get event mesh list - END")
             // ADD ERROR HANDLING
             def response = readJSON text: responseJson.getContent()
             def eventMeshes = response.data.eventMeshIds
 
-//            def foundMesh = false
-            response.data.eventMeshIds.each { val -> 
-              if( val == modelledEventMeshId ) {
-                foundMesh = true
-              }
+            foundMesh = false
+                response.data.eventMeshIds.each { val -> 
+                  if( val == modelledEventMeshId ) {
+                    foundMesh = true
+                  }
             }
-          }
-          script {
+
             if ( foundMesh ) {
               def patchRequest
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( modelledEventMeshId )
               patchRequestJson = writeJSON returnText: true, json: patchRequest
-              def patchResponse = httpRequest httpMode: 'PATCH',
-                                  url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
-//                                  authentication: 'solace-cloud-authorization-header',
-                                  contentType: 'APPLICATION_JSON',
-                                  validResponseCodes: "200,201",
-                                  requestBody: "${patchRequestJson}"
+              withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
+                def patchResponse = httpRequest httpMode: 'PATCH',
+                                    url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
+                                    authentication: "${cloudAuth}",
+                                    contentType: 'APPLICATION_JSON',
+                                    validResponseCodes: "200,201",
+                                    requestBody: "${patchRequestJson}"
+              }
             }
           }
 /*
