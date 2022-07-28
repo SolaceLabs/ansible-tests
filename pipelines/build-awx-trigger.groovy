@@ -57,10 +57,6 @@ pipeline {
         }
       }
     }
-    if ( invName != branch ) {
-      println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
-      return
-    }
     stage( 'lookup tower invId' ) {
       steps {
         script {
