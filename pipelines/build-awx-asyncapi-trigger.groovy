@@ -107,10 +107,12 @@ pipeline {
         steps {
           script {
             foundMesh = false
+            println("call to get event mesh list - START")
             def responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
                                 authentication: 'solace-cloud-authorization-header',
                                 validResponseCodes: "200,201"
+            println("call to get event mesh list - END")
             // ADD ERROR HANDLING
             def response = readJSON text: responseJson.getContent()
             def eventMeshes = response.data.eventMeshIds
