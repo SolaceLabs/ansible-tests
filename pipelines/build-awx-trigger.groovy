@@ -31,7 +31,7 @@ pipeline {
             script {
                 sh "echo ${WEBHOOK_REF}"
                 sh "echo ${WEBHOOK_SSH_URL}"
-                sh "echo ${WEBHOOK_ADDED}"
+//                sh "echo ${WEBHOOK_ADDED}"
                 sh "echo ${WEBHOOK_MODIFIED}"
                 sh "echo && env"
 
