@@ -110,11 +110,7 @@ pipeline {
             println("call to get event mesh list - START")
             withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
                 def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
-//                authHeader.name = 'Authorization'
-//                authHeader.value = "${cloudAuth}"
-//                authHeader.maskValue = true
                 def custHeaders = [ authHeader ]
-
                 responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
                                 customHeaders: custHeaders,
@@ -138,12 +134,14 @@ pipeline {
               patchRequest.data.eventMeshIds.add( modelledEventMeshId )
               patchRequestJson = writeJSON returnText: true, json: patchRequest
               withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
-                def patchResponse = httpRequest httpMode: 'PATCH',
-                                    url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
-                                    authentication: "${cloudAuth}",
-                                    contentType: 'APPLICATION_JSON',
-                                    validResponseCodes: "200,201",
-                                    requestBody: "${patchRequestJson}"
+                  def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
+                  def custHeaders = [ authHeader ]
+                  def patchResponse = httpRequest httpMode: 'PATCH',
+                                        url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
+                                        customHeaders: custHeaders,
+                                        contentType: 'APPLICATION_JSON',
+                                        validResponseCodes: "200,201",
+                                        requestBody: "${patchRequestJson}"
               }
             }
           }
