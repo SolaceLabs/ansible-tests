@@ -3,6 +3,8 @@ def invName
 def invId
 def logicalBroker
 def cicdExtraVars
+
+def branch
 pipeline {
   agent { label 'ansible' }
 /*
@@ -29,14 +31,13 @@ pipeline {
     stage( 'Checkout' ) {
         steps {
             script {
-                sh "echo ${WEBHOOK_REF}"
-                sh "echo ${WEBHOOK_SSH_URL}"
-//                sh "echo ${WEBHOOK_ADDED}"
-                sh "echo ${WEBHOOK_MODIFIED}"
-                sh "echo && env"
-
+               def values = "${ref}".split('/')
+               branch = values[2]
+               println( "Found Branch: ${branch}" )
+            }
+            script {
                 dir( "${BUILD_DIR}" ) {
-                    git branch: "${BRANCH}", url: "${PROJECT_REPO}"
+                    git branch: "${branch}", url: "${PROJECT_REPO}"
                 }
             }
         }
