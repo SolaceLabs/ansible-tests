@@ -21,7 +21,7 @@ pipeline {
   environment {
     CICDCONFIG_FILE = ".jenkins/cicd-development.yaml"
     BUILD_DIR = "__BUILD_DIR__/"
-    CICDCONFIG_FILE = "${BUILD_DIR}${CICDCONFIG_FILE}"
+    CICDCONFIG_FILE_PATH = "${BUILD_DIR}${CICDCONFIG_FILE}"
     PROJECT_REPO = "https://github.com/dennis-brinley/asyncapi-samples.git"
     BRANCH = "main"
   }
@@ -38,7 +38,7 @@ pipeline {
     stage( 'Read CICD Input' ) {
       steps {
         script {
-          cicd = readYaml file: "${CICDCONFIG_FILE}"
+          cicd = readYaml file: "${CICDCONFIG_FILE_PATH}"
           invName = cicd.env
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
