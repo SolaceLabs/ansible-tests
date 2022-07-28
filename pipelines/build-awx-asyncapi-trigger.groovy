@@ -4,6 +4,7 @@ def invId
 def logicalBroker
 def cicdExtraVars
 def branch
+def foundMesh
 pipeline {
   agent { label 'ansible' }
   parameters {
@@ -103,9 +104,9 @@ pipeline {
         }
     }
     stage( 'update EP' ) {
-        def foundMesh = false
         steps {
           script {
+            foundMesh = false
             def responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
                                 authentication: 'solace-cloud-authorization-header',
