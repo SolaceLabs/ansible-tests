@@ -116,11 +116,11 @@ pipeline {
             def foundMesh = false
             response.data.eventMeshIds.each { val -> 
               if( val == modelledEventMeshId ) {
-                found = true
+                foundMesh = true
               }
             }
 
-            if ( found ) {
+            if ( foundMesh ) {
               def patchRequest
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( modelledEventMeshId )
