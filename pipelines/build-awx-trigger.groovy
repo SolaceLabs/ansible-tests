@@ -5,9 +5,6 @@ def logicalBroker
 def cicdExtraVars
 pipeline {
   agent { label 'ansible' }
-  triggers {
-    githubPush()
-  }
 /*
   parameters {
     string( name:           'PROJECT_REPO',
@@ -22,34 +19,30 @@ pipeline {
   }
 */
   environment {
+    CICDCONFIG_FILE = ".jenkins/cicd-development.yaml"
     BUILD_DIR = "__BUILD_DIR__/"
-    CICDCONFIG_FILE = "${BUILD_DIR}.jenkins/cicd-test.yaml"
+    CICDCONFIG_FILE = "${BUILD_DIR}${CICDCONFIG_FILE}"
+    PROJECT_REPO = "https://github.com/dennis-brinley/asyncapi-samples.git"
+    BRANCH = "main"
   }
   stages {
-/*
     stage( 'Checkout' ) {
         steps {
             script {
                 dir( "${BUILD_DIR}" ) {
-                    git branch: "${params.BRANCH}", url: "${params.PROJECT_REPO}"
+                    git branch: "${BRANCH}", url: "${PROJECT_REPO}"
                 }
             }
         }
     }
-    */
     stage( 'Read CICD Input' ) {
       steps {
         script {
-          sh "ls -lah && pwd"
-          sh "env"
-//          cicd = readYaml file: "${CICDCONFIG_FILE}"
-//          invName = cicd.env
-//          logicalBroker = cicd.logicalBroker
-//          cicdExtraVars = writeJSON returnText: true, json: cicd
+          cicd = readYaml file: "${CICDCONFIG_FILE}"
+          invName = cicd.env
+          logicalBroker = cicd.logicalBroker
+          cicdExtraVars = writeJSON returnText: true, json: cicd
         }
-      }
-    }
-/*
         script {
             def responseJson = httpRequest httpMode: 'GET',
                                 url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
@@ -84,10 +77,10 @@ pipeline {
             }
         }
     }
-    */
 //    stage( 'Update EP MEM' ) {
 //        steps {
 //
 //        }
-    }
+//    }
+  }
 }
