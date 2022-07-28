@@ -120,7 +120,8 @@ pipeline {
             }
 
             if ( found ) {
-              def patchRequest.data.eventMeshIds = response.data.eventMeshIds
+              def patchRequest
+              patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( modelledEventMeshId )
               patchRequestJson = writeJSON returnText: true, json: request
               def patchResponse = httpRequest httpMode: 'PATCH',
