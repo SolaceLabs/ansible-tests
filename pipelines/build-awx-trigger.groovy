@@ -83,7 +83,7 @@ pipeline {
                     limit: logicalBroker,
                     extraVars: cicdExtraVars,
                     importTowerLogs: true,
-                    removeColor: true,
+                    removeColor: false,
                     verbose: true,
                     async: false
                 )
