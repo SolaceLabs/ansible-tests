@@ -131,9 +131,13 @@ pipeline {
             }
 
             if ( foundMesh == false ) {
+              def data
+              data.eventMeshIds = response.data.eventMeshIds
+              data.eventMeshIds.add( cicd.modelledEventMeshId )
               def patchRequest
-              patchRequest.data.eventMeshIds = response.data.eventMeshIds
-              patchRequest.data.eventMeshIds.add( cicd.modelledEventMeshId )
+              patchRequest.data = data
+//              patchRequest.data.eventMeshIds = response.data.eventMeshIds
+//              patchRequest.data.eventMeshIds.add( cicd.modelledEventMeshId )
               patchRequestJson = writeJSON returnText: true, json: patchRequest
               println( "${patchRequestJson}" )
               withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
