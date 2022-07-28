@@ -111,7 +111,7 @@ pipeline {
             withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
                 responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
-                                authentication: "${cloudAuth}",
+                                customHeaders: [string(name: 'Authorization', value: "${cloudAuth}", mask: true)],
                                 validResponseCodes: "200,201"
             }
             println("call to get event mesh list - END")
