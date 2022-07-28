@@ -120,15 +120,15 @@ pipeline {
             }
 
             if ( found ) {
-              def request.data.eventMeshIds = response.data.eventMeshIds
-              request.data.eventMeshIds.add( modelledEventMeshId )
-              requestJson = writeJSON returnText: true, json: request
+              def patchRequest.data.eventMeshIds = response.data.eventMeshIds
+              patchRequest.data.eventMeshIds.add( modelledEventMeshId )
+              patchRequestJson = writeJSON returnText: true, json: request
               def patchResponse = httpRequest httpMode: 'PATCH',
                                   url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
                                   authentication: 'solace-cloud-authorization-header',
                                   contentType: 'APPLICATION_JSON'
                                   validResponseCodes: "200,201"
-                                  requestBody: "${requestJson}"
+                                  requestBody: "${patchRequestJson}"
             }
 /*
 def lst = ['foo', 'bar', 'baz']
