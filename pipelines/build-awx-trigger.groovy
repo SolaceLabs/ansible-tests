@@ -17,7 +17,7 @@ pipeline {
             defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
             description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'CICDCONFIG_FILE',
-            defaultValue:   '.jenkins/cicd-development.yaml',
+            defaultValue:   '.jenkins/cicd-extract.yaml',
             description:    'The location of the CICD config file in the repository' )
     string( name:           'REPO_CREDS_ID',
             defaultValue:   'my-jenkins-credentials-id',

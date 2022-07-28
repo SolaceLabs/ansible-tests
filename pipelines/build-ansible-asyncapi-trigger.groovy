@@ -17,7 +17,7 @@ pipeline {
             defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
             description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'ASYNCAPI_FILE',
-            defaultValue:   'asyncapi/acme-retail-fake-queues.yaml',
+            defaultValue:   'asyncapi/asyncapi.yaml',
             description:    'The location of the AsyncAPI file in the repository' )
     string( name:           'REPO_CREDS_ID',
             defaultValue:   'my-jenkins-credentials-id',
