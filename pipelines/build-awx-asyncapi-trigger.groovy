@@ -103,6 +103,7 @@ pipeline {
         }
     }
     stage( 'update EP' ) {
+        def foundMesh = false
         steps {
           script {
             def responseJson = httpRequest httpMode: 'GET',
@@ -113,13 +114,14 @@ pipeline {
             def response = readJSON text: responseJson.getContent()
             def eventMeshes = response.data.eventMeshIds
 
-            def foundMesh = false
+//            def foundMesh = false
             response.data.eventMeshIds.each { val -> 
               if( val == modelledEventMeshId ) {
                 foundMesh = true
               }
             }
-
+          }
+          script {
             if ( foundMesh ) {
               def patchRequest
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
