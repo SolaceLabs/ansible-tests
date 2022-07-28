@@ -130,7 +130,7 @@ pipeline {
               patchRequestJson = writeJSON returnText: true, json: patchRequest
               def patchResponse = httpRequest httpMode: 'PATCH',
                                   url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
-                                  authentication: 'solace-cloud-authorization-header',
+//                                  authentication: 'solace-cloud-authorization-header',
                                   contentType: 'APPLICATION_JSON',
                                   validResponseCodes: "200,201",
                                   requestBody: "${patchRequestJson}"
