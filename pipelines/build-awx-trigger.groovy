@@ -58,6 +58,7 @@ pipeline {
       return
     }
     stage( 'lookup tower invId' ) {
+      steps {
         script {
             def responseJson = httpRequest httpMode: 'GET',
                                 url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
@@ -71,6 +72,7 @@ pipeline {
 
             println( "Found Inventory Name=${invName}, ID=${invId}" )
         }
+      }
     }
     stage ('tower') {
         steps {
