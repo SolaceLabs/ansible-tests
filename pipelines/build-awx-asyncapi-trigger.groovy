@@ -102,10 +102,57 @@ pipeline {
             }
         }
     }
-//    stage( 'Update EP MEM' ) {
-//        steps {
-//
-//        }
-//    }
+    stage( 'update EP' ) {
+        steps {
+            def responseJson = httpRequest httpMode: 'GET',
+                                url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
+                                authentication: 'solace-cloud-authorization-header',
+                                validResponseCodes: "200,201"
+            // ADD ERROR HANDLING
+            def response = readJSON text: responseJson.getContent()
+            def eventMeshes = response.data.eventMeshIds
+
+            def foundMesh = false
+            response.data.eventMeshIds.each { val -> 
+              if( val == modelledEventMeshId ) {
+                found = true
+              }
+            }
+
+            if ( found ) {
+              def request.data.eventMeshIds = response.data.eventMeshIds
+              request.data.eventMeshIds.add( modelledEventMeshId )
+              requestJson = writeJSON returnText: true, json: request
+              def patchResponse = httpRequest httpMode: 'PATCH',
+                                  url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
+                                  authentication: 'solace-cloud-authorization-header',
+                                  contentType: 'APPLICATION_JSON'
+                                  validResponseCodes: "200,201"
+                                  requestBody: "${requestJson}"
+            }
+/*
+def lst = ['foo', 'bar', 'baz']
+// using implicit argument
+lst.each { println it }
+
+// using explicit argument
+lst.each { val -> println val }
+
+// both print:
+// foo
+// bar
+// baz
+
+def lst = ['foo', 'bar', 'baz']
+// explicit arguments are required
+lst.eachWithIndex { val, idx -> println "$val in position $idx" }​​​​​​​​​​​​​​
+
+// prints:
+// foo in position 0
+// bar in position 1
+// baz in position 2
+*/
+        }
+    }
   }
 }
