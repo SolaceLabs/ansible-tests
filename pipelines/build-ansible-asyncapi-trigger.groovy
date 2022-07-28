@@ -80,10 +80,52 @@ pipeline {
         }
       }
     }
-//    stage( 'Update EP MEM' ) {
-//        steps {
-//
-//        }
-//    }
+    stage( 'update EP' ) {
+        steps {
+          script {
+            def responseJson
+            def epAppVersionUrl = "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}"
+            println("call to get event mesh list - START")
+            withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
+                def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
+                def custHeaders = [ authHeader ]
+                responseJson = httpRequest httpMode: 'GET',
+                                url: "${epAppVersionUrl}",
+                                customHeaders: custHeaders,
+                                validResponseCodes: "200,201"
+            }
+            // ADD ERROR HANDLING
+            def response = readJSON text: responseJson.getContent()
+            def eventMeshes = response.data.eventMeshIds
+
+            def foundMesh = false
+                response.data.eventMeshIds.each { val -> 
+                  if( val == cicd.modelledEventMeshId ) {
+                    foundMesh = true
+                  }
+            }
+
+            if ( foundMesh == false ) {
+              def eventMeshIds = response.data.eventMeshIds
+              eventMeshIds.add( cicd.modelledEventMeshId )
+              def patchRequest = [ data : [ eventMeshIds: eventMeshIds ] ]
+              patchRequest.data.applicationId = cicd.applicationId
+              patchRequest.data.id = cicd.applicationVersionId
+              patchRequestJson = writeJSON returnText: true, json: patchRequest
+              println( "${patchRequestJson}" )
+              withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
+                  def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
+                  def custHeaders = [ authHeader ]
+                  def patchResponse = httpRequest httpMode: 'PATCH',
+                                        url: "${epAppVersionUrl}",
+                                        customHeaders: custHeaders,
+                                        contentType: 'APPLICATION_JSON',
+                                        validResponseCodes: "200,201",
+                                        requestBody: "${patchRequestJson}"
+              }
+            }
+          }
+        }
+    }
   }
 }

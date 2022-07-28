@@ -106,12 +106,13 @@ pipeline {
         steps {
           script {
             def responseJson
+            def epAppVersionUrl = "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}"
             println("call to get event mesh list - START")
             withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
                 def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
                 def custHeaders = [ authHeader ]
                 responseJson = httpRequest httpMode: 'GET',
-                                url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
+                                url: "${epAppVersionUrl}",
                                 customHeaders: custHeaders,
                                 validResponseCodes: "200,201"
             }
@@ -138,7 +139,7 @@ pipeline {
                   def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
                   def custHeaders = [ authHeader ]
                   def patchResponse = httpRequest httpMode: 'PATCH',
-                                        url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
+                                        url: "${epAppVersionUrl}",
                                         customHeaders: custHeaders,
                                         contentType: 'APPLICATION_JSON',
                                         validResponseCodes: "200,201",
