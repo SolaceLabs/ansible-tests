@@ -146,28 +146,6 @@ pipeline {
               }
             }
           }
-/*
-def lst = ['foo', 'bar', 'baz']
-// using implicit argument
-lst.each { println it }
-
-// using explicit argument
-lst.each { val -> println val }
-
-// both print:
-// foo
-// bar
-// baz
-
-def lst = ['foo', 'bar', 'baz']
-// explicit arguments are required
-lst.eachWithIndex { val, idx -> println "$val in position $idx" }​​​​​​​​​​​​​​
-
-// prints:
-// foo in position 0
-// bar in position 1
-// baz in position 2
-*/
         }
     }
   }
