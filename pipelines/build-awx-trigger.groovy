@@ -7,25 +7,26 @@ def cicdExtraVars
 def branch
 pipeline {
   agent { label 'ansible' }
-/*
   parameters {
-    string( name:           'PROJECT_REPO',
-            defaultValue:   'https://github.com/dennis-brinley/asyncapi-samples.git', 
-            description:    'Project containing CICD build file')
-    string( name:           'BRANCH',  
-            defaultValue:   'development',              
-            description:    'Branch in code repo to build' )
+    string( name:           'WEBHOOK_REF',
+            defaultValue:   'refs/heads/main', 
+            description:    'refs from GitHook POST body')
+    string( name:           'WEBHOOK_REPO_HTTP_URL',  
+            defaultValue:   'https://github.com/PATH/TO/REPO',              
+            description:    'HTTP URL of the repo with AsyncAPI Info' )
+    string( name:           'WEBHOOK_REPO_SSH_URL',  
+            defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
+            description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'CICDCONFIG_FILE',
             defaultValue:   '.jenkins/cicd-development.yaml',
             description:    'The location of the CICD config file in the repository' )
+    string( name:           'REPO_CREDS_ID',
+            defaultValue:   'my-jenkins-credentials-id',
+            description:    'The credentials used to checkout from the repo' )    
   }
-*/
   environment {
-    CICDCONFIG_FILE = ".jenkins/cicd-development.yaml"
     BUILD_DIR = "__BUILD_DIR__/"
-    CICDCONFIG_FILE_PATH = "${BUILD_DIR}${CICDCONFIG_FILE}"
-    PROJECT_REPO = "https://github.com/dennis-brinley/asyncapi-samples.git"
-    BRANCH = "main"
+    CICDCONFIG_FILE = "${BUILD_DIR}${params.CICDCONFIG_FILE}"
   }
   stages {
     stage( 'Checkout' ) {
@@ -45,8 +46,8 @@ pipeline {
     stage( 'Read CICD Input' ) {
       steps {
         script {
-          cicd = readYaml file: "${CICDCONFIG_FILE_PATH}"
-          invName = cicd.env
+          cicd = readYaml file: "${CICDCONFIG_FILE}"
+          invName = cicd.environment
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
         }
