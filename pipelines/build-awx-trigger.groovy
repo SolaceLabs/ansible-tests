@@ -31,7 +31,7 @@ pipeline {
     stage( 'Checkout' ) {
         steps {
             script {
-               def values = "${ref}".split('/')
+               def values = "${WEBHOOK_REF}".split('/')
                branch = values[2]
                println( "Found Branch: ${branch}" )
             }
