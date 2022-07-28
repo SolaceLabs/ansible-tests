@@ -3,6 +3,7 @@ def invName
 def logicalBroker
 def cicdExtraVars
 def branch
+def secretsFile
 pipeline {
   agent { label 'ansible' }
   parameters {
@@ -25,7 +26,6 @@ pipeline {
   environment {
     BUILD_DIR = "__BUILD_DIR__/"
     CICDCONFIG_FILE = "${BUILD_DIR}${params.CICDCONFIG_FILE}"
-    ENV_SECRETS_FILE = "config/${BRANCH}_secrets.encrypted"
   }
   stages {
     stage( 'Checkout' ) {
@@ -34,6 +34,7 @@ pipeline {
                def values = "${WEBHOOK_REF}".split('/')
                branch = values[2]
                println( "Found Branch: ${branch}" )
+               secretsFile = "config/${branch}_secrets.encrypted"
             }
             script {
                 dir( "${BUILD_DIR}" ) {
@@ -59,7 +60,7 @@ pipeline {
     stage ('ansible build') {
       steps {
         withCredentials([file(credentialsId: 'ansible_vault_password', variable: 'vault_passwd_file')]) {
-          ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${ENV_SECRETS_FILE}", 
+          ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${secretsFile}", 
                           installation: 'ANSIBLE_SOLACE_COLLECTION', 
                           inventory: "inventory/${invName}", 
                           limit: "${logicalBroker}", 
