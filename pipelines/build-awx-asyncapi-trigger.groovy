@@ -109,12 +109,11 @@ pipeline {
             def responseJson
             println("call to get event mesh list - START")
             withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
-                def authHeader
-                authHeader.name = 'Authorization'
-                authHeader.value = "${cloudAuth}"
-                authHeader.maskValue = true
-                def custHeaders
-                custHeaders[0] = authHeader
+                def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
+//                authHeader.name = 'Authorization'
+//                authHeader.value = "${cloudAuth}"
+//                authHeader.maskValue = true
+                def custHeaders = [ authHeader ]
 
                 responseJson = httpRequest httpMode: 'GET',
                                 url: "https://api.solace.cloud/api/v2/architecture/applications/${cicd.applicationId}/versions/${cicd.applicationVersionId}",
