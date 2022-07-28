@@ -25,6 +25,7 @@ pipeline {
   environment {
     BUILD_DIR = "__BUILD_DIR__/"
     CICDCONFIG_FILE = "${BUILD_DIR}${params.CICDCONFIG_FILE}"
+    ENV_SECRETS_FILE = "config/${BRANCH}_secrets.encrypted"
   }
   stages {
     stage( 'Checkout' ) {
