@@ -133,6 +133,7 @@ pipeline {
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( cicd.modelledEventMeshId )
               patchRequestJson = writeJSON returnText: true, json: patchRequest
+              println( "${patchRequestJson}" )
               withCredentials([string(credentialsId: 'solace-cloud-authorization-header', variable: 'cloudAuth')]) {
                   def authHeader = [ name: 'Authorization', value: "${cloudAuth}", maskValue: true ]
                   def custHeaders = [ authHeader ]
