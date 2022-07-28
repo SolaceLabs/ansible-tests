@@ -128,7 +128,7 @@ pipeline {
                   }
             }
 
-            if ( foundMesh ) {
+            if ( foundMesh == true ) {
               def patchRequest
               patchRequest.data.eventMeshIds = response.data.eventMeshIds
               patchRequest.data.eventMeshIds.add( cicd.modelledEventMeshId )
