@@ -6,7 +6,6 @@ physical_broker_1:
       broker_type: standalone
       ansible_connection: local
       sempv2_host: ansible-config-1-pubsubplus.solace.svc.cluster.local
-#      sempv2_host: 35.232.8.227
       sempv2_port: 8080
       sempv2_is_secure_connection: false
       sempv2_timeout: '10'
