@@ -28,7 +28,7 @@ pipeline {
     TMP_DIR = "tmp/"
     CICDCONFIG_FILE = "${TMP_DIR}generated-cicd-config.yaml"
 //    JAR_CICD_EXTRACT = "/home/jenkins/exec-jars/asyncapi-cicd-parser-0.1.1.jar"
-    JAR_CICD_EXTRACT = "Users/dennisbrinley/Development/Projects/ansible-projects/container/asyncapi-cicd-parser-0.1.1.jar"
+    JAR_CICD_EXTRACT = "/Users/dennisbrinley/Development/Projects/ansible-jenkins/container/asyncapi-cicd-parser-0.1.1.jar"
   }
   stages {
     stage( 'Checkout' ) {
