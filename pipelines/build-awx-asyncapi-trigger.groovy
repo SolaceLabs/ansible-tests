@@ -71,7 +71,8 @@ pipeline {
       steps {
         script {
             def responseJson = httpRequest httpMode: 'GET',
-                                url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
+//                                url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
+                                url: "http://localhost:9080/api/v2/inventories/?name=${invName}",
                                 authentication: 'awx-credentials',
                                 validResponseCodes: "200,201"
 
