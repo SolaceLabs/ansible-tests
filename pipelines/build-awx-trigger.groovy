@@ -5,7 +5,7 @@ def logicalBroker
 def cicdExtraVars
 def branch
 pipeline {
-  agent { label 'ansible' }
+  agent { label 'tower' }
   parameters {
     string( name:           'WEBHOOK_REF',
             defaultValue:   'refs/heads/main', 
