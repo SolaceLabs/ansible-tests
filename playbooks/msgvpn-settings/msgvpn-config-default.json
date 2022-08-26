@@ -7,10 +7,6 @@
         "authenticationBasicType": "internal"
     },
     "cloudMsgVpnConfig": {
-        "enabled": true,
-        "jndiEnabled": true,
-        "maxMsgSpoolUsage": 100,
-        "authenticationBasicEnabled": true,
-        "authenticationBasicType": "internal"
+        "jndiEnabled": true
     }
 }
