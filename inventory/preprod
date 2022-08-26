@@ -1,0 +1,69 @@
+---
+physical_broker_1:
+##  STANDALONE SOFTWARE BROKER
+  hosts:
+    preprod1-pubsubplus:
+      ansible_connection: local
+      broker_type: standalone
+      sempv2_host: preprod1-pubsubplus.solace.svc.cluster.local
+      sempv2_port: 8080
+      sempv2_is_secure_connection: false
+      sempv2_timeout: '10'
+      msg_vpn: cicd-demo
+      virtual_router: primary
+
+physical_broker_2:
+##  STANDALONE SOFTWARE BROKER
+  hosts:
+    preprod2-pubsubplus:
+      ansible_connection: local
+      broker_type: standalone
+      sempv2_host: preprod2-pubsubplus.solace.svc.cluster.local
+      sempv2_port: 8080
+      sempv2_is_secure_connection: false
+      sempv2_timeout: '10'
+      msg_vpn: cicd-demo
+      virtual_router: primary
+
+physical_broker_3:
+  hosts:
+##  SOLACE CLOUD SERVICE BROKER
+    cicd-demo-preprod3:
+      ansible_connection: local
+      broker_type: solace_cloud
+      sempv2_host: mr-connection-hjxdqd7w3j4.messaging.solace.cloud
+      sempv2_is_secure_connection: true
+      sempv2_port: 943
+      sempv2_timeout: '10'
+      solace_cloud_service_id: 0n9b7pp3v8b
+      virtual_router: primary
+      msg_vpn: cicd-demo
+
+physical_broker_4:
+##  STANDALONE SOFTWARE BROKER
+  hosts:
+    preprod4-pubsubplus:
+      ansible_connection: local
+      broker_type: standalone
+      sempv2_host: preprod4-pubsubplus.solace.svc.cluster.local
+      sempv2_port: 8080
+      sempv2_is_secure_connection: false
+      sempv2_timeout: '10'
+      msg_vpn: cicd-demo
+      virtual_router: primary
+
+logical_broker_a:
+  children:
+    physical_broker_1:
+
+logical_broker_b:
+  children:
+    physical_broker_2:
+
+logical_broker_c:
+  children:
+    physical_broker_3:
+
+logical_broker_d:
+  children:
+    physical_broker_4:

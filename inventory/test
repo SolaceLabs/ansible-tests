@@ -2,30 +2,29 @@
 physical_broker_1:
 ##  STANDALONE SOFTWARE BROKER
   hosts:
-    software_broker_01:
-      broker_type: standalone
+    test1-pubsubplus:
       ansible_connection: local
-      sempv2_host: ansible-config-1-pubsubplus.solace.svc.cluster.local
-#      sempv2_host: 35.232.8.227
+      broker_type: standalone
+      sempv2_host: test1-pubsubplus.solace.svc.cluster.local
       sempv2_port: 8080
       sempv2_is_secure_connection: false
       sempv2_timeout: '10'
-      vpn: default
+      msg_vpn: cicd-demo
       virtual_router: primary
 
 physical_broker_2:
   hosts:
 ##  SOLACE CLOUD SERVICE BROKER
-    solace_cloud_service_01:
+    cicd-demo-test2:
       ansible_connection: local
       broker_type: solace_cloud
-      sempv2_host: mr6p7iajy93k7.messaging.solace.cloud
+      sempv2_host: mroh8joz6uj1c.messaging.solace.cloud
       sempv2_is_secure_connection: true
       sempv2_port: 943
       sempv2_timeout: '10'
-      solace_cloud_service_id: rmgitgpqonk
+      solace_cloud_service_id: mc941sf7mrc
       virtual_router: primary
-      vpn: zd-solace-et
+      msg_vpn: cicd-demo
 
 logical_broker_a:
   children:
@@ -33,11 +32,11 @@ logical_broker_a:
 
 logical_broker_b:
   children:
-    physical_broker_2:
+    physical_broker_1:
 
 logical_broker_c:
   children:
-    physical_broker_1:
+    physical_broker_2:
 
 logical_broker_d:
   children:

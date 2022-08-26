@@ -10,13 +10,13 @@
       port: "{{ sempv2_port }}"
       secure_connection: "{{ sempv2_is_secure_connection }}"
       timeout: "{{ sempv2_timeout }}"
-      msg_vpn: "{{ vpn }}"
+      msg_vpn: "{{ msg_vpn }}"
     solace.pubsub_plus.solace_queue_subscriptions:
       host: "{{ sempv2_host }}"
       port: "{{ sempv2_port }}"
       secure_connection: "{{ sempv2_is_secure_connection }}"
       timeout: "{{ sempv2_timeout }}"
-      msg_vpn: "{{ vpn }}"
+      msg_vpn: "{{ msg_vpn }}"
 
   tasks:
 

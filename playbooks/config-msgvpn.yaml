@@ -1,0 +1,120 @@
+- name: Configure new MsgVpn for Demo
+  hosts: all
+  gather_facts: false
+  any_errors_fatal: true
+  collections:
+    - solace.pubsub_plus
+  module_defaults:
+    solace_vpn:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ msg_vpn }}"
+    solace_get_vpns:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      timeout: "{{ sempv2_timeout }}"
+    solace_client_profile:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      timeout: "{{ sempv2_timeout }}"
+      msg_vpn: "{{ msg_vpn }}"
+
+  tasks:
+    - name: Get secrets from file on disk
+      ansible.builtin.include_vars:
+        file: "{{ secrets_file }}"
+      when: secrets_file is defined
+
+    - name: get solace cloud msg_vpn
+      block:
+        - name: get 1 vpn config
+          solace_get_vpns:
+            username: "{{ broker_secrets[ inventory_hostname ].username }}"
+            password: "{{ broker_secrets[ inventory_hostname ].password }}"
+          register: result
+
+        - name: get cloud msg_vpn name
+          set_fact:
+            msg_vpn_name: "{{ result.result_list[0].data.msgVpnName  }}"
+            current_settings: "{{ result.result_list[0].data }}"
+      when: broker_type == 'solace_cloud'
+
+    - set_fact:
+        msg_vpn_name: "{{ msg_vpn }}"
+      when: broker_type != 'solace_cloud'
+
+    - name: config vpn if not solace cloud
+      solace_vpn:
+        name: "{{ msg_vpn_name }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        state: present
+      when: broker_type != 'solace_cloud'
+
+    - name: get msgVpnConfig from default file on disk
+      ansible.builtin.include_vars:
+        file: "msgvpn-settings/msgvpn-config-default.json"
+      when: ( msgVpnConfig is not defined ) and ( msgvpn_config_file is not defined )
+
+    - name: get msgVpnConfig from specified file on disk
+      ansible.builtin.include_vars:
+        file: "{{ msgvpn_config_file }}"
+      when: ( msgVpnConfig is not defined ) and ( msgvpn_config_file is defined )
+
+    - name: update vpn settings
+      solace_vpn:
+        name: "{{ msg_vpn_name }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        settings: "{{ msgVpnConfig }}"
+        state: present
+
+    - name: get clientProfiles from default file on disk
+      ansible.builtin.include_vars:
+        file: "msgvpn-settings/client-profile-config-default.json"
+      when: ( clientProfiles is not defined ) and ( client_profile_config_file is not defined )
+
+    - name: get clientProfiles from specified file on disk
+      ansible.builtin.include_vars:
+        file: "{{ client_profile_config_file }}"
+      when: ( clientProfiles is not defined ) and ( client_profile_config_file is defined )
+
+    - name: config client profiles
+      solace_client_profile:
+        name: "{{ clientProfile.clientProfileName }}"
+        msg_vpn: "{{ msg_vpn_name }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        settings: "{{ clientProfile }}"
+        state: present
+      loop: "{{ clientProfiles }}"
+      loop_control:
+        loop_var: clientProfile
+      when: clientProfiles is defined
+
+    - name: get clientUsers from default file on disk
+      ansible.builtin.include_vars:
+        file: "msgvpn-settings/client-user-config-default.json"
+      when: ( clientUsers is not defined ) and ( client_user_config_file is not defined )
+
+    - name: get clientUsers from specified file on disk
+      ansible.builtin.include_vars:
+        file: "{{ client_user_config_file }}"
+      when: ( clientUsers is not defined ) and ( client_user_config_file is defined )
+
+    - name: config client users
+      solace_client_profile:
+        name: "{{ clientUser.clientUsername }}"
+        msg_vpn: "{{ msg_vpn_name }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        settings: "{{ clientUser }}"
+        state: present
+      loop: "{{ clientUsers }}"
+      loop_control:
+        loop_var: clientUser
+      when: clientUsers is defined

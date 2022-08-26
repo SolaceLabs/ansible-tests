@@ -1,0 +1,22 @@
+{
+    "clientUsers": [
+        {
+            "clientProfileName": "guaranteed_msg_profile",
+            "clientUsername": "solace_user1",
+            "enabled": true,
+            "password": "CheeseAndCrackers!"
+        },
+        {
+            "clientProfileName": "guaranteed_msg_profile",
+            "clientUsername": "solace_user2",
+            "enabled": true,
+            "password": "ToastAndJam!"
+        },
+        {
+            "clientProfileName": "guaranteed_msg_profile",
+            "clientUsername": "solace_user3",
+            "enabled": true,
+            "password": "BaconAndEggs!!"
+        }
+    ]
+}

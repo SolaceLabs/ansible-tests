@@ -51,6 +51,6 @@
       msg:
         - "playbook '{{ ansible_play_name }}' complete"
         - "broker: {{ broker_url }}"
-        - "vpn:    {{ vpn }}"
+        - "vpn:    {{ msg_vpn }}"
         - "queue:  {{ queueDefinition.queueName }}"
         - "subscriptions: {{ queueDefinition.topicSubscriptions|default([]) }}"
