@@ -71,13 +71,23 @@
         file: "{{ msgvpn_config_file }}"
       when: ( msgVpnConfig is not defined ) and ( msgvpn_config_file is defined )
 
-    - name: update vpn settings
+    - name: update vpn settings non-cloud brokers
       solace_vpn:
         name: "{{ msg_vpn_name }}"
         username: "{{ broker_secrets[ inventory_hostname ].username }}"
         password: "{{ broker_secrets[ inventory_hostname ].password }}"
         settings: "{{ msgVpnConfig }}"
         state: present
+      when: broker_type != 'solace_cloud'
+
+    - name: update vpn settings cloud brokers
+      solace_vpn:
+        name: "{{ msg_vpn_name }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        settings: "{{ cloudMsgVpnConfig }}"
+        state: present
+      when: broker_type == 'solace_cloud'
 
     - name: get clientProfiles from default file on disk
       ansible.builtin.include_vars:
