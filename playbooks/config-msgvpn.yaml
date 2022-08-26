@@ -71,46 +71,49 @@
         file: "{{ msgvpn_config_file }}"
       when: ( msgVpnConfig is not defined ) and ( msgvpn_config_file is defined )
 
-    - name: update vpn settings non-cloud brokers
-      solace_vpn:
-        name: "{{ msg_vpn_name }}"
-        username: "{{ broker_secrets[ inventory_hostname ].username }}"
-        password: "{{ broker_secrets[ inventory_hostname ].password }}"
-        settings: "{{ msgVpnConfig }}"
-        state: present
-      when: broker_type != 'solace_cloud'
+    # - name: update vpn settings non-cloud brokers
+    #   solace_vpn:
+    #     name: "{{ msg_vpn_name }}"
+    #     username: "{{ broker_secrets[ inventory_hostname ].username }}"
+    #     password: "{{ broker_secrets[ inventory_hostname ].password }}"
+    #     settings: "{{ msgVpnConfig }}"
+    #     state: present
+    #   when: broker_type != 'solace_cloud'
 
     - name: update vpn settings cloud brokers
       solace_vpn:
         name: "{{ msg_vpn_name }}"
         username: "{{ broker_secrets[ inventory_hostname ].username }}"
         password: "{{ broker_secrets[ inventory_hostname ].password }}"
-        settings: "{{ cloudMsgVpnConfig }}"
+        settings: "{{ msgVpnConfig if broker_type != 'solace_cloud' else cloudMsgVpnConfig }}"
         state: present
-      when: broker_type == 'solace_cloud'
+#      when: broker_type == 'solace_cloud'
 
-    - name: get clientProfiles from default file on disk
-      ansible.builtin.include_vars:
-        file: "msgvpn-settings/client-profile-config-default.json"
-      when: ( clientProfiles is not defined ) and ( client_profile_config_file is not defined )
+    - name: create client profiles for non-cloud brokers
+      block:
+      - name: get clientProfiles from default file on disk
+        ansible.builtin.include_vars:
+          file: "msgvpn-settings/client-profile-config-default.json"
+        when: ( clientProfiles is not defined ) and ( client_profile_config_file is not defined )
 
-    - name: get clientProfiles from specified file on disk
-      ansible.builtin.include_vars:
-        file: "{{ client_profile_config_file }}"
-      when: ( clientProfiles is not defined ) and ( client_profile_config_file is defined )
+      - name: get clientProfiles from specified file on disk
+        ansible.builtin.include_vars:
+          file: "{{ client_profile_config_file }}"
+        when: ( clientProfiles is not defined ) and ( client_profile_config_file is defined )
 
-    - name: config client profiles
-      solace_client_profile:
-        name: "{{ clientProfile.clientProfileName }}"
-        msg_vpn: "{{ msg_vpn_name }}"
-        username: "{{ broker_secrets[ inventory_hostname ].username }}"
-        password: "{{ broker_secrets[ inventory_hostname ].password }}"
-        settings: "{{ clientProfile }}"
-        state: present
-      loop: "{{ clientProfiles }}"
-      loop_control:
-        loop_var: clientProfile
-      when: clientProfiles is defined
+      - name: config client profiles
+        solace_client_profile:
+          name: "{{ clientProfile.clientProfileName }}"
+          msg_vpn: "{{ msg_vpn_name }}"
+          username: "{{ broker_secrets[ inventory_hostname ].username }}"
+          password: "{{ broker_secrets[ inventory_hostname ].password }}"
+          settings: "{{ clientProfile }}"
+          state: present
+        loop: "{{ clientProfiles }}"
+        loop_control:
+          loop_var: clientProfile
+        when: clientProfiles is defined
+      when: broker_type != 'solace_cloud'
 
     - name: get clientUsers from default file on disk
       ansible.builtin.include_vars:
