@@ -34,31 +34,38 @@
         - "queueName"
     register: queueList
 
-  - name: delete all queues
-    block:
-      - name: disable queue
-        solace_queue:
-          name: "{{ queueItem }}"
-          username: "{{ broker_secrets[ inventory_hostname ].username }}"
-          password: "{{ broker_secrets[ inventory_hostname ].password }}"
-          settings:
-            ingressDisabled: true
-            egressDisabled: true
-          state: present
-      - name: delete msgs from queue
-        ansible.builtin.uri:
-          url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}/SEMP/v2/action/msgVpns/{{ msg_vpn }}/queues/{{ queueItem }}/deleteMsgs"
-          user: "{{ broker_secrets[ inventory_hostname ].username }}"
-          password: "{{ broker_secrets[ inventory_hostname ].password }}"
-          method: PUT
-  #        force_basic_auth: yes
-          status_code: 200
-      - name: delete queue
-        solace_queue:
-          name: "{{ queueItem }}"
-          username: "{{ broker_secrets[ inventory_hostname ].username }}"
-          password: "{{ broker_secrets[ inventory_hostname ].password }}"
-          state: absent
+#  - name: delete all queues
+  - name: disable queue
+    solace_queue:
+      name: "{{ queueItem }}"
+      username: "{{ broker_secrets[ inventory_hostname ].username }}"
+      password: "{{ broker_secrets[ inventory_hostname ].password }}"
+      settings:
+        ingressDisabled: true
+        egressDisabled: true
+      state: present
+    loop: "{{ queueList }}"
+    loop_control:
+      loop_var: queueItem
+
+  - name: delete msgs from queue
+    ansible.builtin.uri:
+      url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}/SEMP/v2/action/msgVpns/{{ msg_vpn }}/queues/{{ queueItem }}/deleteMsgs"
+      user: "{{ broker_secrets[ inventory_hostname ].username }}"
+      password: "{{ broker_secrets[ inventory_hostname ].password }}"
+      method: PUT
+#        force_basic_auth: yes
+      status_code: 200
+    loop: "{{ queueList }}"
+    loop_control:
+      loop_var: queueItem
+
+  - name: delete queue
+    solace_queue:
+      name: "{{ queueItem }}"
+      username: "{{ broker_secrets[ inventory_hostname ].username }}"
+      password: "{{ broker_secrets[ inventory_hostname ].password }}"
+      state: absent
     loop: "{{ queueList }}"
     loop_control:
       loop_var: queueItem
