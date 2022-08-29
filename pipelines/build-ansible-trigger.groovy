@@ -34,7 +34,7 @@ pipeline {
                def values = "${WEBHOOK_REF}".split('/')
                branch = values[2]
                println( "Found Branch: ${branch}" )
-               secretsFile = "config/${branch}_secrets.encrypted"
+               secretsFile = "secrets/${branch}_secrets.encrypted"
             }
             script {
                 dir( "${BUILD_DIR}" ) {
