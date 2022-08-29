@@ -1,0 +1,22 @@
+{
+    "clientUsers": [
+        {
+            "clientProfileName": "default",
+            "clientUsername": "solace_user1",
+            "enabled": true,
+            "password": "CheeseAndCrackers!"
+        },
+        {
+            "clientProfileName": "default",
+            "clientUsername": "solace_user2",
+            "enabled": true,
+            "password": "ToastAndJam!"
+        },
+        {
+            "clientProfileName": "default",
+            "clientUsername": "solace_user3",
+            "enabled": true,
+            "password": "BaconAndEggs!"
+        }
+    ]
+}

@@ -41,3 +41,11 @@ logical_broker_c:
 logical_broker_d:
   children:
     physical_broker_2:
+
+software_brokers:
+  children:
+    physical_broker_1:
+
+cloud_brokers:
+  children:
+    physical_broker_2:
