@@ -16,7 +16,7 @@
             "clientProfileName": "guaranteed_msg_profile",
             "clientUsername": "solace_user3",
             "enabled": true,
-            "password": "BaconAndEggs!!"
+            "password": "BaconAndEggs!"
         }
     ]
 }

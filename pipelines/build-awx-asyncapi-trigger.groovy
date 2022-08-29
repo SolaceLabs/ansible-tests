@@ -27,8 +27,7 @@ pipeline {
     BUILD_DIR = "__BUILD_DIR__/"
     TMP_DIR = "tmp/"
     CICDCONFIG_FILE = "${TMP_DIR}generated-cicd-config.yaml"
-//    JAR_CICD_EXTRACT = "/home/jenkins/exec-jars/asyncapi-cicd-parser-0.1.1.jar"
-    JAR_CICD_EXTRACT = "/Users/dennisbrinley/Development/Projects/ansible-jenkins/container/asyncapi-cicd-parser-0.1.1.jar"
+    JAR_CICD_EXTRACT = "/home/jenkins/exec-jars/asyncapi-cicd-parser-0.1.1.jar"
   }
   stages {
     stage( 'Checkout' ) {
@@ -71,8 +70,7 @@ pipeline {
       steps {
         script {
             def responseJson = httpRequest httpMode: 'GET',
-//                                url: "http://awx-tower-service.awx.svc.cluster.local/api/v2/inventories/?name=${invName}",
-                                url: "http://localhost:9080/api/v2/inventories/?name=${invName}",
+                                url: "http://awx-tower-service.awx.svc.cluster.local:9080/api/v2/inventories/?name=${invName}",
                                 authentication: 'awx-credentials',
                                 validResponseCodes: "200,201"
 
