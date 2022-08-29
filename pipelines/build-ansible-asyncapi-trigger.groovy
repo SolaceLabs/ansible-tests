@@ -69,13 +69,13 @@ pipeline {
     }
     stage ('ansible build') {
       steps {
-        withCredentials([file(credentialsId: 'ansible_vault_password', variable: 'vault_passwd_file')]) {
+        withCredentials([file(credentialsId: 'ansible-vault-password', variable: 'vault_passwd_file')]) {
           ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${secretsFile}", 
                           installation: 'ANSIBLE_SOLACE_COLLECTION', 
                           inventory: "inventory/${invName}", 
                           limit: "${logicalBroker}", 
                           playbook: 'playbooks/create-multi-queue-control.yaml', 
-                          vaultCredentialsId: 'ansible_vault_password'  
+                          vaultCredentialsId: 'ansible-vault-password'  
 
         }
       }
