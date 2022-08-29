@@ -46,7 +46,7 @@
         ingressDisabled: true
         egressDisabled: true
       state: present
-    loop: "{{ result.result_list.data }}"
+    loop: "{{ result.result_list }}"
     loop_control:
       loop_var: queueItem
 
@@ -58,7 +58,7 @@
       method: PUT
 #        force_basic_auth: yes
       status_code: 200
-    loop: "{{ result.result_list.data }}"
+    loop: "{{ result.result_list }}"
     loop_control:
       loop_var: queueItem
 
@@ -68,6 +68,6 @@
       username: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       state: absent
-    loop: "{{ result.result_list.data }}"
+    loop: "{{ result.result_list }}"
     loop_control:
       loop_var: queueItem
