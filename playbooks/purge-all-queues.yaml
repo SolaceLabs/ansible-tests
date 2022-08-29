@@ -45,7 +45,7 @@
 #  - name: delete all queues
   - name: disable queue
     solace_queue:
-      name: "{{ queueItem.queueName }}"
+      name: "{{ queueItem.data.queueName }}"
       username: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       settings:
@@ -58,7 +58,7 @@
 
   - name: delete msgs from queue
     ansible.builtin.uri:
-      url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}/SEMP/v2/action/msgVpns/{{ msg_vpn }}/queues/{{ queueItem.queueName }}/deleteMsgs"
+      url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}/SEMP/v2/action/msgVpns/{{ msg_vpn }}/queues/{{ queueItem.data.queueName }}/deleteMsgs"
       user: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       method: PUT
@@ -70,7 +70,7 @@
 
   - name: delete queue
     solace_queue:
-      name: "{{ queueItem.queueName }}"
+      name: "{{ queueItem.data.queueName }}"
       username: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       state: absent
