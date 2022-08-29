@@ -36,6 +36,12 @@
         - "queueName"
     register: result
 
+  - name: print result
+    debug:
+      msg:
+      - "{{ result.result_list }}"
+      - "{{ result.result_list_count }}"
+
 #  - name: delete all queues
   - name: disable queue
     solace_queue:
