@@ -34,40 +34,40 @@
 #        - "queueName==foo*"
         select:
         - "queueName"
-    register: queueList
+    register: result
 
 #  - name: delete all queues
   - name: disable queue
     solace_queue:
-      name: "{{ queueItem }}"
+      name: "{{ queueItem.queueName }}"
       username: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       settings:
         ingressDisabled: true
         egressDisabled: true
       state: present
-    loop: "{{ queueList }}"
+    loop: "{{ result.result_list.data }}"
     loop_control:
       loop_var: queueItem
 
   - name: delete msgs from queue
     ansible.builtin.uri:
-      url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}/SEMP/v2/action/msgVpns/{{ msg_vpn }}/queues/{{ queueItem }}/deleteMsgs"
+      url: "{{ 'https' if sempv2_is_secure_connection else 'http' }}://{{ sempv2_host }}:{{ sempv2_port }}/SEMP/v2/action/msgVpns/{{ msg_vpn }}/queues/{{ queueItem.queueName }}/deleteMsgs"
       user: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       method: PUT
 #        force_basic_auth: yes
       status_code: 200
-    loop: "{{ queueList }}"
+    loop: "{{ result.result_list.data }}"
     loop_control:
       loop_var: queueItem
 
   - name: delete queue
     solace_queue:
-      name: "{{ queueItem }}"
+      name: "{{ queueItem.queueName }}"
       username: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       state: absent
-    loop: "{{ queueList }}"
+    loop: "{{ result.result_list.data }}"
     loop_control:
       loop_var: queueItem
