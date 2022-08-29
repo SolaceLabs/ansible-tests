@@ -27,6 +27,8 @@
   - name: get queue list
     solace_get_queues:
       api: monitor
+      username: "{{ broker_secrets[ inventory_hostname ].username }}"
+      password: "{{ broker_secrets[ inventory_hostname ].password }}"
       query_params:
 #        where:
 #        - "queueName==foo*"
