@@ -49,8 +49,8 @@
       username: "{{ broker_secrets[ inventory_hostname ].username }}"
       password: "{{ broker_secrets[ inventory_hostname ].password }}"
       settings:
-        ingressDisabled: true
-        egressDisabled: true
+        ingressEnabled: false
+        egressEnabled: false
       state: present
     loop: "{{ result.result_list }}"
     loop_control:
