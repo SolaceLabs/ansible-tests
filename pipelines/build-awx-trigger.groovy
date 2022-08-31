@@ -49,10 +49,10 @@ pipeline {
           invName = cicd.environment
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
-          if ( invName != branch ) {
-            println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
-            error('Aborting the build.')
-          }
+          // if ( invName != branch ) {
+          //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
+          //   error('Aborting the build.')
+          // }
         }
       }
     }

@@ -50,10 +50,10 @@ pipeline {
           invName = cicd.environment
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
-          if ( invName != branch ) {
-            println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
-            error('Aborting the build.')
-          }
+          // if ( invName != branch ) {
+          //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
+          //   error('Aborting the build.')
+          // }
         }
       }
     }
@@ -61,7 +61,7 @@ pipeline {
       steps {
         withCredentials([file(credentialsId: 'ansible-vault-password', variable: 'vault_passwd_file')]) {
           ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${secretsFile}", 
-                          installation: 'ANSIBLE_SOLACE_COLLECTION', 
+                          installation: 'solace-ansible-install', 
                           inventory: "inventory/${invName}", 
                           limit: "${logicalBroker}", 
                           playbook: 'playbooks/create-multi-queue-control.yaml', 
