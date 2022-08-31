@@ -54,8 +54,8 @@ pipeline {
           //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
           //   error('Aborting the build.')
           // }
+          secretsFile = "secrets/${invName}_secrets.encrypted"
         }
-        secretsFile = "secrets/${invName}_secrets.encrypted"
       }
     }
     stage ('ansible build') {
