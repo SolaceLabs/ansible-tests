@@ -19,6 +19,9 @@ pipeline {
     string( name:           'ASYNCAPI_FILE',
             defaultValue:   'asyncapi/asyncapi.yaml',
             description:    'The location of the AsyncAPI file in the repository' )
+    string( name:           'BUILD_ENV_FILE',
+            defaultValue:   '.jenkins/build-env.yaml',
+            description:    'The location of the Build Environment file in the repository' )
     // string( name:           'REPO_CREDS_ID',
     //         defaultValue:   'my-jenkins-credentials-id',
     //         description:    'The credentials used to checkout from the repo' )    
@@ -48,8 +51,16 @@ pipeline {
     stage( 'Extract CICD' ) {
       steps {
         script {
+          def buildEnvExists = fileExists "${BUILD_ENV_FILE}"
+          def buildEnv
+          if ( buildEnvExists == true ) {
+            def buildEnvParams = readYaml file: "${BUILD_ENV_FILE}"
+            buildEnv = buildEnvParams.buildEnv
+          } else {
+            buildEnv = "${branch}"
+          }
           sh "mkdir -p ${TMP_DIR} && rm -f ${CICDCONFIG_FILE}"
-          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${branch}"
+          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${buildEnv}"
         }
       }
     }
@@ -60,10 +71,10 @@ pipeline {
           invName = cicd.environment
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
-          if ( invName != branch ) {
-            println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
-            error('Aborting the build.')
-          }
+          // if ( invName != branch ) {
+          //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
+          //   error('Aborting the build.')
+          // }
           secretsFile = "secrets/${invName}_secrets.encrypted"
         }
       }
