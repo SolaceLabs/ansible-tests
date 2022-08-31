@@ -51,10 +51,10 @@ pipeline {
     stage( 'Extract CICD' ) {
       steps {
         script {
-          def buildEnvExists = fileExists "${BUILD_ENV_FILE}"
+          def buildEnvExists = fileExists "${BUILD_DIR}/${BUILD_ENV_FILE}"
           def buildEnv
           if ( buildEnvExists == true ) {
-            def buildEnvParams = readYaml file: "${BUILD_ENV_FILE}"
+            def buildEnvParams = readYaml file: "${BUILD_DIR}/${BUILD_ENV_FILE}"
             buildEnv = buildEnvParams.buildEnv
           } else {
             buildEnv = "${branch}"
