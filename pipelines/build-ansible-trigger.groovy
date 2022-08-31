@@ -34,7 +34,7 @@ pipeline {
                def values = "${WEBHOOK_REF}".split('/')
                branch = values[2]
                println( "Found Branch: ${branch}" )
-               secretsFile = "secrets/${branch}_secrets.encrypted"
+//               secretsFile = "secrets/${branch}_secrets.encrypted"
             }
             script {
                 dir( "${BUILD_DIR}" ) {
@@ -55,6 +55,7 @@ pipeline {
           //   error('Aborting the build.')
           // }
         }
+        secretsFile = "secrets/${invName}_secrets.encrypted"
       }
     }
     stage ('ansible build') {

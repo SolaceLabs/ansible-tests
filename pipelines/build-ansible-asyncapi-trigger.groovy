@@ -36,7 +36,7 @@ pipeline {
                def values = "${WEBHOOK_REF}".split('/')
                branch = values[2]
                println( "Found Branch: ${branch}" )
-               secretsFile = "secrets/${branch}_secrets.encrypted"
+//               secretsFile = "secrets/${branch}_secrets.encrypted"
             }
             script {
                 dir( "${BUILD_DIR}" ) {
@@ -64,6 +64,7 @@ pipeline {
             println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
             error('Aborting the build.')
           }
+          secretsFile = "secrets/${invName}_secrets.encrypted"
         }
       }
     }

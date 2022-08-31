@@ -42,7 +42,7 @@ pipeline {
             //    secretsFile = "secrets/${branch}_secrets.encrypted"
             // }
             script {
-              secretsFile = "secrets/${REPO_BRANCH}_secrets.encrypted"
+//              secretsFile = "secrets/${REPO_BRANCH}_secrets.encrypted"
               dir( "${BUILD_DIR}" ) {
                   git branch: "${REPO_BRANCH}", url: "${REPO_HTTP_URL}"
               }
@@ -68,6 +68,7 @@ pipeline {
           //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
           //   error('Aborting the build.')
           // }
+          secretsFile = "secrets/${invName}_secrets.encrypted"
         }
       }
     }
