@@ -13,20 +13,20 @@ pipeline {
     string( name:           'WEBHOOK_REPO_HTTP_URL',  
             defaultValue:   'https://github.com/PATH/TO/REPO',              
             description:    'HTTP URL of the repo with AsyncAPI Info' )
-    string( name:           'WEBHOOK_REPO_SSH_URL',  
-            defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
-            description:    'SSH URL of the repo with AsyncAPI Info' )
+    // string( name:           'WEBHOOK_REPO_SSH_URL',  
+    //         defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
+    //         description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'ASYNCAPI_FILE',
             defaultValue:   'asyncapi/asyncapi.yaml',
             description:    'The location of the AsyncAPI file in the repository' )
-    string( name:           'REPO_CREDS_ID',
-            defaultValue:   'my-jenkins-credentials-id',
-            description:    'The credentials used to checkout from the repo' )    
+    // string( name:           'REPO_CREDS_ID',
+    //         defaultValue:   'my-jenkins-credentials-id',
+    //         description:    'The credentials used to checkout from the repo' )    
   }
   environment {
-    BUILD_DIR = "__BUILD_DIR__/"
-    TMP_DIR = "tmp/"
-    CICDCONFIG_FILE = "${TMP_DIR}generated-cicd-config.yaml"
+    BUILD_DIR = "__BUILD_DIR__"
+    TMP_DIR = "tmp"
+    CICDCONFIG_FILE = "${TMP_DIR}/generated-cicd-config.yaml"
     JAR_CICD_EXTRACT = "/home/jenkins/exec-jars/asyncapi-cicd-parser-0.1.1.jar"
   }
   stages {
@@ -48,7 +48,7 @@ pipeline {
       steps {
         script {
           sh "mkdir -p ${TMP_DIR} && rm -f ${CICDCONFIG_FILE}"
-          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${branch}"
+          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${branch}"
         }
       }
     }

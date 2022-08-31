@@ -2,18 +2,21 @@ def cicd
 def invName
 def logicalBroker
 def cicdExtraVars
-def branch
+//def branch
 def secretsFile
 pipeline {
   agent { label 'ansible' }
   parameters {
-    string( name:           'WEBHOOK_REF',
-            defaultValue:   'refs/heads/main', 
-            description:    'refs from GitHook POST body')
-    string( name:           'WEBHOOK_REPO_HTTP_URL',  
+    string( name:           'BUILD_ENV',
+            defaultValue:   'development', 
+            description:    'Build Environment ID')
+    string( name:           'REPO_BRANCH',
+            defaultValue:   'main', 
+            description:    'Git branch to build')
+    string( name:           'REPO_HTTP_URL',  
             defaultValue:   'https://github.com/PATH/TO/REPO',              
             description:    'HTTP URL of the repo with AsyncAPI Info' )
-    // string( name:           'WEBHOOK_REPO_SSH_URL',  
+    // string( name:           'REPO_SSH_URL',  
     //         defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
     //         description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'ASYNCAPI_FILE',
@@ -32,16 +35,17 @@ pipeline {
   stages {
     stage( 'Checkout' ) {
         steps {
+            // script {
+            //    def values = "${WEBHOOK_REF}".split('/')
+            //    branch = values[2]
+            //    println( "Found Branch: ${branch}" )
+            //    secretsFile = "secrets/${branch}_secrets.encrypted"
+            // }
             script {
-               def values = "${WEBHOOK_REF}".split('/')
-               branch = values[2]
-               println( "Found Branch: ${branch}" )
-               secretsFile = "secrets/${branch}_secrets.encrypted"
-            }
-            script {
-                dir( "${BUILD_DIR}" ) {
-                    git branch: "${branch}", url: "${WEBHOOK_REPO_HTTP_URL}"
-                }
+              secretsFile = "secrets/${REPO_BRANCH}_secrets.encrypted"
+              dir( "${BUILD_DIR}" ) {
+                  git branch: "${REPO_BRANCH}", url: "${REPO_HTTP_URL}"
+              }
             }
         }
     }
@@ -49,7 +53,7 @@ pipeline {
       steps {
         script {
           sh "mkdir -p ${TMP_DIR} && rm -f ${CICDCONFIG_FILE}"
-          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${branch}"
+          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${BUILD_ENV}"
         }
       }
     }
@@ -60,10 +64,10 @@ pipeline {
           invName = cicd.environment
           logicalBroker = cicd.logicalBroker
           cicdExtraVars = writeJSON returnText: true, json: cicd
-          if ( invName != branch ) {
-            println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
-            error('Aborting the build.')
-          }
+          // if ( invName != branch ) {
+          //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
+          //   error('Aborting the build.')
+          // }
         }
       }
     }

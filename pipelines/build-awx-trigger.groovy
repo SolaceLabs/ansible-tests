@@ -13,19 +13,19 @@ pipeline {
     string( name:           'WEBHOOK_REPO_HTTP_URL',  
             defaultValue:   'https://github.com/PATH/TO/REPO',              
             description:    'HTTP URL of the repo with AsyncAPI Info' )
-    string( name:           'WEBHOOK_REPO_SSH_URL',  
-            defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
-            description:    'SSH URL of the repo with AsyncAPI Info' )
+    // string( name:           'WEBHOOK_REPO_SSH_URL',  
+    //         defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
+    //         description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'CICDCONFIG_FILE',
             defaultValue:   '.jenkins/cicd-extract.yaml',
             description:    'The location of the CICD config file in the repository' )
-    string( name:           'REPO_CREDS_ID',
-            defaultValue:   'my-jenkins-credentials-id',
-            description:    'The credentials used to checkout from the repo' )    
+    // string( name:           'REPO_CREDS_ID',
+    //         defaultValue:   'my-jenkins-credentials-id',
+    //         description:    'The credentials used to checkout from the repo' )    
   }
   environment {
-    BUILD_DIR = "__BUILD_DIR__/"
-    CICDCONFIG_FILE = "${BUILD_DIR}${params.CICDCONFIG_FILE}"
+    BUILD_DIR = "__BUILD_DIR__"
+    CICDCONFIG_FILE = "${BUILD_DIR}/${params.CICDCONFIG_FILE}"
   }
   stages {
     stage( 'Checkout' ) {
