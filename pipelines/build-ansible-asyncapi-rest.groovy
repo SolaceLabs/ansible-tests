@@ -8,7 +8,7 @@ pipeline {
   agent { label 'ansible' }
   parameters {
     string( name:           'BUILD_ENV',
-            defaultValue:   'development', 
+            defaultValue:   '##_DEFAULT_##', 
             description:    'Build Environment ID')
     string( name:           'REPO_BRANCH',
             defaultValue:   'main', 
@@ -22,6 +22,9 @@ pipeline {
     string( name:           'ASYNCAPI_FILE',
             defaultValue:   'asyncapi/asyncapi.yaml',
             description:    'The location of the AsyncAPI file in the repository' )
+    string( name:           'BUILD_ENV_FILE',
+            defaultValue:   '.jenkins/build-env.yaml',
+            description:    'The location of the Build Environment file in the repository' )
     // string( name:           'REPO_CREDS_ID',
     //         defaultValue:   'my-jenkins-credentials-id',
     //         description:    'The credentials used to checkout from the repo' )    
@@ -52,8 +55,19 @@ pipeline {
     stage( 'Extract CICD' ) {
       steps {
         script {
+          def buildEnv = "${BUILD_ENV}"
+          def defaultBuildEnvValue = "##_DEFAULT_##"
+          if (buildEnv == defaultBuildEnvValue) {
+            def buildEnvExists = fileExists "${BUILD_DIR}/${BUILD_ENV_FILE}"
+            if ( buildEnvExists == true ) {
+              def buildEnvParams = readYaml file: "${BUILD_DIR}/${BUILD_ENV_FILE}"
+              buildEnv = buildEnvParams.buildEnv
+            } else {
+              buildEnv = "${branch}"
+            }
+          }
           sh "mkdir -p ${TMP_DIR} && rm -f ${CICDCONFIG_FILE}"
-          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${BUILD_ENV}"
+          sh "java -jar ${JAR_CICD_EXTRACT} --asyncapi-in=${BUILD_DIR}/${ASYNCAPI_FILE} --output=${CICDCONFIG_FILE} --target-server=${buildEnv}"
         }
       }
     }
@@ -81,7 +95,6 @@ pipeline {
                           limit: "${logicalBroker}", 
                           playbook: 'playbooks/create-multi-queue-control.yaml', 
                           vaultCredentialsId: 'ansible-vault-password'  
-
         }
       }
     }
