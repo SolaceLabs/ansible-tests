@@ -1,11 +1,11 @@
 def cicd
 def invName
+def invId
 def logicalBroker
 def cicdExtraVars
 //def branch
-def secretsFile
 pipeline {
-  agent { label 'ansible' }
+  agent { label 'tower' }
   parameters {
     string( name:           'BUILD_ENV',
             defaultValue:   '##_DEFAULT_##', 
@@ -16,7 +16,7 @@ pipeline {
     string( name:           'REPO_HTTP_URL',  
             defaultValue:   'https://github.com/PATH/TO/REPO',              
             description:    'HTTP URL of the repo with AsyncAPI Info' )
-    // string( name:           'REPO_SSH_URL',  
+    // string( name:           'WEBHOOK_REPO_SSH_URL',  
     //         defaultValue:   'ssh://git@github.com/PATH/TO/REPO',              
     //         description:    'SSH URL of the repo with AsyncAPI Info' )
     string( name:           'ASYNCAPI_FILE',
@@ -42,13 +42,11 @@ pipeline {
             //    def values = "${WEBHOOK_REF}".split('/')
             //    branch = values[2]
             //    println( "Found Branch: ${branch}" )
-            //    secretsFile = "secrets/${branch}_secrets.encrypted"
             // }
             script {
-//              secretsFile = "secrets/${REPO_BRANCH}_secrets.encrypted"
-              dir( "${BUILD_DIR}" ) {
-                  git branch: "${REPO_BRANCH}", url: "${REPO_HTTP_URL}"
-              }
+                dir( "${BUILD_DIR}" ) {
+                    git branch: "${REPO_BRANCH}", url: "${REPO_HTTP_URL}"
+                }
             }
         }
     }
@@ -82,21 +80,44 @@ pipeline {
           //   println( "### THE [cicd_spec.environment] != [branch] of the Repo; EXITING ###" )
           //   error('Aborting the build.')
           // }
-          secretsFile = "secrets/${invName}_secrets.encrypted"
         }
       }
     }
-    stage ('ansible build') {
+    stage( 'lookup tower invId' ) {
       steps {
-        withCredentials([file(credentialsId: 'ansible-vault-password', variable: 'vault_passwd_file')]) {
-          ansiblePlaybook extras: "-e '${cicdExtraVars}' -e @${secretsFile}", 
-                          installation: 'solace-ansible-install', 
-                          inventory: "inventory/${invName}", 
-                          limit: "${logicalBroker}", 
-                          playbook: 'playbooks/create-multi-queue-control.yaml', 
-                          vaultCredentialsId: 'ansible-vault-password'  
+        script {
+            def responseJson = httpRequest httpMode: 'GET',
+                                url: "http://awx-tower-service.awx.svc.cluster.local:9080/api/v2/inventories/?name=${invName}",
+                                authentication: 'awx-credentials',
+                                validResponseCodes: "200,201"
+
+            // ADD ERROR HANDLING
+            def response = readJSON text: responseJson.getContent()
+
+            invId = response.results[0].id
+
+            println( "Found Inventory Name=${invName}, ID=${invId}" )
         }
       }
+    }
+    stage ('tower') {
+        steps {
+            script {
+                def results = ansibleTower(
+                    towerServer: 'Solace AWX',
+                    jobTemplate: 'multi-queue',
+                    inventory: invId.toString(),
+                    limit: logicalBroker,
+                    extraVars: cicdExtraVars,
+                    importTowerLogs: true,
+                    removeColor: true,
+                    verbose: true,
+                    async: false
+                )
+                println(results.JOB_ID)
+                println(results.value)
+            }
+        }
     }
     stage( 'update EP' ) {
         steps {
