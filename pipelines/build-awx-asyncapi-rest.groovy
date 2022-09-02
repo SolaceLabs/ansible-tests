@@ -147,7 +147,8 @@ pipeline {
             if ( foundMesh == false ) {
               def eventMeshIds = response.data.eventMeshIds
               eventMeshIds.add( cicd.modelledEventMeshId )
-              def patchRequest = [ data : [ eventMeshIds: eventMeshIds ] ]
+//              def patchRequest = [ data : [ eventMeshIds: eventMeshIds ] ]
+              def patchRequest = [ eventMeshIds: eventMeshIds ]
               patchRequest.data.applicationId = cicd.applicationId
               patchRequest.data.id = cicd.applicationVersionId
               patchRequestJson = writeJSON returnText: true, json: patchRequest
