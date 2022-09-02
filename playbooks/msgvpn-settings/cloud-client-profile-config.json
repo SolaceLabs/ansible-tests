@@ -1,0 +1,12 @@
+{
+    "clientProfiles": [
+        {
+            "clientProfileName": "guaranteed_msg_profile",
+            "allowSharedSubscriptionsEnabled" : true,
+            "allowGuaranteedMsgReceiveEnabled" : true,
+            "allowGuaranteedMsgSendEnabled" : true,
+            "allowGuaranteedEndpointCreateEnabled": true,
+            "allowTransactedSessionsEnabled" : true
+        }
+    ]
+}
