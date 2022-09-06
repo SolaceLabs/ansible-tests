@@ -22,6 +22,13 @@
       secure_connection: "{{ sempv2_is_secure_connection }}"
       timeout: "{{ sempv2_timeout }}"
       msg_vpn: "{{ msg_vpn }}"
+    solace_cloud_client_profile:
+      host: "{{ sempv2_host }}"
+      port: "{{ sempv2_port }}"
+      secure_connection: "{{ sempv2_is_secure_connection }}"
+      timeout: "{{ sempv2_timeout }}"
+      solace_cloud_api_token: "{{ solace_cloud_api_token if broker_type=='solace_cloud' else omit }}"
+      solace_cloud_service_id: "{{ solace_cloud_service_id if broker_type=='solace_cloud' else omit }}"
     solace.pubsub_plus.solace_client_username:
       host: "{{ sempv2_host }}"
       port: "{{ sempv2_port }}"
@@ -35,10 +42,10 @@
         file: "{{ secrets_file }}"
       when: secrets_file is defined
 
-    - name: get msgVpnConfig from file
-      ansible.builtin.include_vars:
-        file: "{{ msgvpn_config_file }}"
-      when: ( msgVpnConfig is not defined ) and ( msgvpn_config_file is defined )
+    # - name: get msgVpnConfig from file
+    #   ansible.builtin.include_vars:
+    #     file: "{{ msgvpn_config_file }}"
+    #   when: ( msgVpnConfig is not defined ) and ( msgvpn_config_file is defined )
 
     - name: get clientProfiles from file
       ansible.builtin.include_vars:
@@ -80,7 +87,7 @@
         loop_var: clientUser
       when: clientUsers is defined
 
-    - name: config client profiles
+    - name: config client profiles for non-cloud brokers
       solace_client_profile:
         name: "{{ clientProfile.clientProfileName }}"
         msg_vpn: "{{ msg_vpn_name }}"
@@ -90,7 +97,19 @@
       loop: "{{ clientProfiles }}"
       loop_control:
         loop_var: clientProfile
-      when: clientProfiles is defined
+      when: (broker_type != 'solace_cloud') and (clientProfiles is defined)
+
+    - name: config client profiles for cloud brokers
+      solace_cloud_client_profile:
+        name: "{{ clientProfile.clientProfileName }}"
+        msg_vpn: "{{ msg_vpn_name }}"
+        username: "{{ broker_secrets[ inventory_hostname ].username }}"
+        password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        state: absent
+      loop: "{{ clientProfiles }}"
+      loop_control:
+        loop_var: clientProfile
+      when: (broker_type == 'solace_cloud') and (clientProfiles is defined)
 
     - name: manage vpn for non-cloud brokers
       solace_vpn:
