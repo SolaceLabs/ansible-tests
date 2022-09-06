@@ -101,7 +101,7 @@
     - name: config client profiles for cloud brokers
       solace_cloud_client_profile:
         name: "{{ clientProfile.clientProfileName }}"
-        msg_vpn: "{{ msg_vpn_name }}"
+        # msg_vpn: "{{ msg_vpn_name }}"
         username: "{{ broker_secrets[ inventory_hostname ].username }}"
         password: "{{ broker_secrets[ inventory_hostname ].password }}"
         solace_cloud_api_token: "{{ broker_secrets[ inventory_hostname ].solace_cloud_api_token }}"
