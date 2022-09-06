@@ -27,7 +27,6 @@
       port: "{{ sempv2_port }}"
       secure_connection: "{{ sempv2_is_secure_connection }}"
       timeout: "{{ sempv2_timeout }}"
-      solace_cloud_api_token: "{{ solace_cloud_api_token if broker_type=='solace_cloud' else omit }}"
       solace_cloud_service_id: "{{ solace_cloud_service_id if broker_type=='solace_cloud' else omit }}"
     solace.pubsub_plus.solace_client_username:
       host: "{{ sempv2_host }}"
@@ -105,6 +104,7 @@
         msg_vpn: "{{ msg_vpn_name }}"
         username: "{{ broker_secrets[ inventory_hostname ].username }}"
         password: "{{ broker_secrets[ inventory_hostname ].password }}"
+        solace_cloud_api_token: "{{ broker_secrets[ inventory_hostname ].solace_cloud_api_token }}"
         state: absent
       loop: "{{ clientProfiles }}"
       loop_control:
