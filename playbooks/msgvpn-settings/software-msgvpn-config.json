@@ -2,7 +2,7 @@
     "msgVpnConfig": {
         "enabled": true,
         "jndiEnabled": true,
-        "maxMsgSpoolUsage": 100,
+        "maxMsgSpoolUsage": 2500,
         "authenticationBasicEnabled": true,
         "authenticationBasicType": "internal"
     }

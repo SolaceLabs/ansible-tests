@@ -31,11 +31,11 @@ physical_broker_3:
     cicd-demo-preprod3:
       ansible_connection: local
       broker_type: solace_cloud
-      sempv2_host: mr-connection-hjxdqd7w3j4.messaging.solace.cloud
+      sempv2_host: mr-connection-2cdv361gw3r.messaging.solace.cloud
       sempv2_is_secure_connection: true
       sempv2_port: 943
       sempv2_timeout: '10'
-      solace_cloud_service_id: 0n9b7pp3v8b
+      solace_cloud_service_id: 057kbb4kp4z
       virtual_router: primary
       msg_vpn: cicd-demo
 
