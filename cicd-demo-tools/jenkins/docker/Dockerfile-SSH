@@ -1,0 +1,72 @@
+## Dockerfile for Jenkins SSH Agent + Ansible Controller
+## Image based on Jenkins SSH Agent
+## - docker.io/jenkins/ssh-agent:latest-jdk11
+## Install:
+## - ansible
+## - Solace PubSub+ Ansible Collection
+##
+## Already installed:
+## - git command line
+##
+## Base Image:    docker.io/jenkins/agent:latest-jdk11
+## OS Base:       PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+
+## DECLARE BASE IMAGE
+FROM docker.io/jenkins/ssh-agent:latest-jdk11
+## USER root
+
+
+RUN export DEBIAN_FRONTEND=noninteractive
+
+RUN apt update
+RUN apt-get -yq install gnupg
+RUN apt-get -yq install curl
+RUN apt-get -yq install sudo
+RUN apt-get -yq install vim
+
+## WORKAROUND (THAT DIDN'T WORK)
+## ADD JENKINS USER TO SUDO + EXEMPT FROM PASSWORD CHALLENGE
+RUN adduser jenkins sudo
+RUN echo "jenkins ALL=(ALL) NOPASSWD:/usr/sbin/service" >> /etc/sudoers
+
+RUN curl -sL "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x93C4A3FD7BB9C367" | apt-key add
+RUN apt-get update
+
+## ADD INSTALLATION REFERENCE FOR DEBIAN APT
+RUN echo '## Adding ansible installation source' >> /etc/apt/sources.list
+RUN echo 'deb http://ppa.launchpad.net/ansible/ansible/ubuntu focal main' >> /etc/apt/sources.list
+
+## INSTALL ANSIBLE
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+RUN apt update
+## MAKE SURE PYTHON3 IS INSTALLED WITH THE CORRECT DEPENDENCIES
+RUN apt -yq install python3
+RUN apt -yq install python3-distutils
+RUN apt -yq install ansible
+
+## INSTALL SOLACE ANSIBLE COLLECTION
+RUN ansible-galaxy collection install solace.pubsub_plus
+
+WORKDIR /home/jenkins
+RUN mkdir -p exec-jars && chmod +x exec-jars
+COPY asyncapi-cicd-parser-0.1.1.jar ./exec-jars/
+
+## NEED TO GET THE SYSTEM ENVIRONMENT SET UP IN SSH SHELL
+## PROBABLY BECAUSE RUNNING AS ROOT INSTEAD OF JENKINS
+##
+## THIS SCRIPT INSERTS A LINE INTO .bashrc THAT COPIES ENV VARS
+## FROM /etc/environment INTO ENV - NECESSARY FOR SSH LOGON
+## **** ENV IS WORKAROUND FOR NOW ****
+##
+
+WORKDIR /root
+COPY set_jenkins_env.sh .
+RUN chmod +x set_jenkins_env.sh
+RUN ./set_jenkins_env.sh
+
+ENTRYPOINT ["setup-sshd"]
+
+####   BUILD:
+####
+####   docker build -t ghcr.io/solacelabs/solace-jenkins-ssh:latest --file Dockerfile-SSH .
+####   docker push ghcr.io/solacelabs/solace-jenkins-ssh:latest

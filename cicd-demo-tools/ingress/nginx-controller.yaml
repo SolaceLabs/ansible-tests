@@ -1,0 +1,17 @@
+---
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 768Mi
+  service:
+    ipFamilies:
+      - IPv4
+  wildcardTLS:
+    secret: default/ingress-tls-secret
+  defaultTLS:
+    secret: default/ingress-tls-secret
+  setAsDefaultIngress: true

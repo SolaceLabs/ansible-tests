@@ -1,0 +1,49 @@
+## Dockerfile for Jenkins Agent + Ansible Controller
+## Image based on Jenkins Agent
+## Install:
+## X python3
+## X pip
+## - ansible
+## - Solace PubSub+ Ansible Collection
+##
+## Already installed:
+## - git command line
+##
+## Base Image:    docker.io/jenkins/agent:latest-jdk11
+## OS Base:       PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+
+## DECLARE BASE IMAGE
+FROM docker.io/jenkins/agent:latest-jdk11
+USER root
+
+RUN export DEBIAN_FRONTEND=noninteractive
+
+RUN apt update
+RUN apt-get -yq install gnupg
+RUN apt-get -yq install curl
+
+RUN curl -sL "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x93C4A3FD7BB9C367" | apt-key add
+RUN apt-get update
+
+## ADD INSTALLATION REFERENCE FOR DEBIAN APT
+RUN echo '## Adding ansible installation source' >> /etc/apt/sources.list
+RUN echo 'deb http://ppa.launchpad.net/ansible/ansible/ubuntu focal main' >> /etc/apt/sources.list
+
+## INSTALL ANSIBLE
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+RUN apt update
+RUN apt -yq install ansible
+
+## INSTALL SOLACE ANSIBLE COLLECTION
+RUN ansible-galaxy collection install solace.pubsub_plus
+
+WORKDIR /home/jenkins
+COPY start-jenkins.sh .
+RUN chmod +x *.sh
+
+ENTRYPOINT ["/home/jenkins/start-jenkins.sh"]
+
+####   BUILD STUFF:
+####
+####   docker build -t ghcr.io/solace-labs/solace-jenkins-jnlp:1.0 --file ./Dockerfile-JNLP
+####   docker push ghcr.io/solace-labs/solace-jenkins-jnlp:1.0

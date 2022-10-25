@@ -1,0 +1,47 @@
+---
+apiVersion: awx.ansible.com/v1beta1
+kind: AWX
+metadata:
+  name: awx-tower
+  namespace: awx
+spec:
+  admin_email: somebodys-email@solace.com
+  admin_password_secret: awx-admin-password
+  service_type: ClusterIP
+#  service_type: LoadBalancer
+#  loadbalancer_port: 9080
+#  loadbalancer_protocol: http
+  postgres_resource_requirements:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 750m
+      memory: 768Mi
+  postgres_storage_requirements:
+    requests:
+      storage: 8Gi
+    limits:
+      storage: 16Gi
+  postgres_storage_class: gp2
+  web_resource_requirements:
+    requests:
+      cpu: 250m
+      memory: 2Gi
+    limits:
+      cpu: 1000m
+      memory: 4Gi
+  task_resource_requirements:
+    requests:
+      cpu: 250m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  ee_resource_requirements:
+    requests:
+      cpu: 250m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 2Gi

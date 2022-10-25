@@ -1,0 +1,25 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: jenkins
+  annotations:
+    nginx.org/redirect-to-https: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - "jenkins.demo.solace.dev"
+  rules:
+  - host: "jenkins.demo.solace.dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: cto-jenkins-service
+            port:
+              number: 9080

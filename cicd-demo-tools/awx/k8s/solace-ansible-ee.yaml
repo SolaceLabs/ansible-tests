@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: awx
+  name: solace-ansible-ee
+spec:
+  serviceAccountName: default
+  automountServiceAccountToken: false
+  containers:
+    - image: 'ghcr.io/solacelabs/awx-solace:1.0'
+      name: worker
+      args:
+#        - ansible-runner
+#        - worker
+        - sleep
+        - infinity
+        - '--private-data-dir=/runner'
+      resources:
+        requests:
+          cpu: 500m
+          memory: 256Mi
+        limits:
+          cpu: 1
+          memory: 512Mi

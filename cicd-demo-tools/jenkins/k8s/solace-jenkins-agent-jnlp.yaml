@@ -1,0 +1,60 @@
+##  JENKINS AGENT DEPLOYMENT FOR JNLP
+##  REFERENCES IMAGE WITH ANSIBLE + SOLACE ANSIBLE COLLECTION INSTALLED
+##  SERVICE NOT REQUIRED - AGENT INITIATES CONNECTION TO JENKINS
+##
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ansible-jenkins-agent
+  namespace: jenkins
+spec:
+  selector:
+    matchLabels:
+      app: agent
+  template:
+    metadata:
+      labels:
+        app: agent
+      name: jenkins-ansible-dep
+    spec:
+##  SHOULD RUN AS 'jenkins' == uid 1000
+##  DOES NOT WORK IN K8S B/C FILE PERMISSIONS
+#      securityContext:
+#        runAsUser: 1000
+#        runAsGroup: 1000
+      volumes:
+      - name: ssh-volume
+        configMap:
+          name: ssh-config
+      containers:
+      - name: jenkins-ansible
+        image: ghcr.io/solacelabs/solace-jenkins-jnlp:1.0
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+        - name:  JENKINS_JNLP_URL
+          valueFrom:
+            secretKeyRef:
+              name: agent-secrets
+              key: jnlpurl
+              optional: false
+        - name:  JENKINS_AGENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: agent-secrets
+              key: agentsecret
+              optional: false
+        - name:  WORK_DIR
+          valueFrom:
+            secretKeyRef:
+              name: agent-secrets
+              key: workdir
+              optional: false
+        imagePullPolicy: Always
+      restartPolicy: Always

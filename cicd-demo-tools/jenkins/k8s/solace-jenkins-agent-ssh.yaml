@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ansible-jenkins-ssh-agent
+  namespace: jenkins
+spec:
+  selector:
+    matchLabels:
+      app: ssh-agent
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ssh-agent
+#      name: jenkins-ansible-dep
+    spec:
+#      securityContext:
+#        runAsUser: 1000
+#        runAsGroup: 1000
+      volumes:
+      - name: ssh-volume
+        configMap:
+          name: ssh-config
+      containers:
+      - name: ssh-agent
+        image: ghcr.io/solacelabs/solace-jenkins-ssh:1.0
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 22
+        volumeMounts:
+        - name: ssh-volume
+          subPath: sshd_config
+          mountPath: /etc/ssh/sshd_config
+        - name: ssh-volume
+          subPath: authorized_keys
+          mountPath: /root/.ssh/authorized_keys
+        imagePullPolicy: Always
+      restartPolicy: Always
+##
+##  USE CLUSTER IP SVC FOR JENKINS SSH AGENT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ssh-agent-svc
+  namespace: jenkins
+spec:
+  type: ClusterIP
+  ports:
+  - port: 22
+    targetPort: 22
+  selector:
+    app: ssh-agent
+##
+##  THIS LB SERVICE WAS USED FOR SSH TESTING; IT CAN BE DISABLED:
+##  ---
+##  apiVersion: v1
+##  kind: Service
+##  metadata:
+##    name: ssh-agent-lb
+##    namespace: jenkins
+##  spec:
+##    type: LoadBalancer
+##    ports:
+##    - port: 2222
+##      targetPort: 22
+##    selector:
+##      app: ssh-agent

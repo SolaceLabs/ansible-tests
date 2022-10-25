@@ -1,0 +1,125 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev1-pubsubplus-ingress
+  namespace: solace
+  annotations:
+    nginx.org/redirect-to-https: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - "dev1-pubsubplus.demo.solace.dev"
+#    secretName: -- uses default for controller
+  rules:
+  - host: "dev1-pubsubplus.demo.solace.dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: dev1-pubsubplus
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test1-pubsubplus-ingress
+  namespace: solace
+  annotations:
+    nginx.org/redirect-to-https: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - "test1-pubsubplus.demo.solace.dev"
+#    secretName: -- uses default for controller
+  rules:
+  - host: "test1-pubsubplus.demo.solace.dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: test1-pubsubplus
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: preprod1-pubsubplus-ingress
+  namespace: solace
+  annotations:
+    nginx.org/redirect-to-https: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - "preprod1-pubsubplus.demo.solace.dev"
+#    secretName: -- uses default for controller
+  rules:
+  - host: "preprod1-pubsubplus.demo.solace.dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: preprod1-pubsubplus
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: preprod2-pubsubplus-ingress
+  namespace: solace
+  annotations:
+    nginx.org/redirect-to-https: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - "preprod2-pubsubplus.demo.solace.dev"
+#    secretName: -- uses default for controller
+  rules:
+  - host: "preprod2-pubsubplus.demo.solace.dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: preprod2-pubsubplus
+            port:
+              number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: preprod4-pubsubplus-ingress
+  namespace: solace
+  annotations:
+    nginx.org/redirect-to-https: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+      - "preprod4-pubsubplus.demo.solace.dev"
+#    secretName: -- uses default for controller
+  rules:
+  - host: "preprod4-pubsubplus.demo.solace.dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: preprod4-pubsubplus
+            port:
+              number: 8080
