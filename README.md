@@ -1,4 +1,4 @@
-# ansible-tests
+# Ansible Plugin
 This project contains:
 1. Components and instructions to build the CICD Demo Tools environment in Kubernetes
 2. Pipeline and Code Objects for Ansible and Jenkins to provision Solace queues
@@ -25,7 +25,7 @@ The inventory files are located under the [inventory](./inventory) folder. There
 Ansible playbooks are defined at [playbooks](https://github.com/SolaceLabs/ansible-tests/tree/main/playbooks) folder. There are playbooks to set up the environment and to maintain queues and subscriptions.
 
 ## Jenkins
-Jenkins is used to execute CI/CD piplines. 
+Jenkins is used to execute CI/CD piplines. For more details see [Jenkins docuemntation](./cicd-demo-tools/jenkins)
 
 ### Pipelines
 - The pipeline scripts are located at [pipelines](https://github.com/SolaceLabs/ansible-tests/tree/main/playbooks)
